@@ -1,0 +1,125 @@
+.current-data-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.todays-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 90%;
+  max-height: 200px;
+  flex-wrap: wrap;
+}
+.major-data {
+  width: 40%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  height: 100%;
+}
+.major-data img {
+  width: 20%;
+  height: 20%;
+  object-fit: cover;
+  margin-left: 15px;
+}
+.major-data div,
+.major-data span {
+  font-size: 2.25em;
+  color: #ffffff;
+  margin-left: 10px;
+}
+.major-data div.todays-temp {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-right: 5px;
+}
+.major-data div .todays-description {
+  font-size: 0.6em;
+  color: #99b8d6;
+  margin-right: 10px;
+}
+
+.minor-data {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  border-left: 2px solid #93a2dc;
+}
+
+.minor-data span {
+  font-size: 1.3rem;
+  color: #ffffff;
+  width: calc(33.33% - 20px);
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
+.minor-data span .description {
+  font-size: 1.1rem;
+  color: #99b8d6;
+}
+.following-days-data h2 {
+  color: #99b8d6;
+  font-size: 1.5em;
+}
+/* Extra Small Devices (Phones) */
+@media (max-width: 575.98px) {
+  .todays-data {
+    font-size: 12px;
+  }
+  .major-data {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .major-data img {
+    width: 50%;
+    height: 50%;
+  }
+  .major-data div,
+  .major-data span {
+    margin-right: 25px;
+  }
+  .major-data div .todays-description {
+    font-size: 0.7em;
+    color: #99b8d6;
+    margin-right: 10px;
+  }
+
+  .minor-data span {
+    margin: 10px 15px;
+  }
+
+  .minor-data span.wind-speed {
+    margin-left: 20px;
+  }
+
+  .following-days-data h2 {
+    font-size: 1.25em;
+    margin-top: 60px;
+    margin-left: 20px;
+  }
+}
+
+/* Medium Devices (Laptops and Desktops) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .major-data {
+    font-size: 0.8em;
+  }
+  .major-data div,
+  .major-data span {
+    font-size: 2em;
+
+    margin-left: 0px;
+  }
+}

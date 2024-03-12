@@ -1,0 +1,110 @@
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.search-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 85%;
+}
+
+.search-area input[type="text"] {
+  width: 700px;
+  padding: 10px 0;
+  padding-left: 5px;
+  margin: 10px 1.5px 0px 5px;
+  border-radius: 5px;
+  outline: none;
+  font-size: 1em;
+}
+
+.search-area button {
+  width: 75px;
+  height: 43px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  margin: 10px 0px 0px 0px;
+}
+.search-response {
+  display: flex;
+  flex-direction: column;
+  border-top: none;
+  border-radius: 5px;
+  overflow: hidden;
+  width: 53.5%;
+  padding-right: 5px;
+  margin-top: 0px;
+}
+.suggestions {
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  
+  background-color: #ffffff;
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  width: 100%;
+  height: 100%;
+  list-style: none;
+  margin: 0px;
+}
+.suggestions li {
+  padding: 2px;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 2px;
+}
+.suggestions li:last-child {
+  border-bottom: none;
+}
+@media (max-width: 576px) {
+ 
+
+}
+
+/* Extra Small Devices (Phones) */
+@media (max-width: 1024px) {
+  .search-area {
+    width: 95%;
+  }
+  .search-area input[type="text"] {
+    width: 85%;
+  }
+    .search-area button {
+    width: 38px;
+  }
+  .search-response{
+    width:92%;
+  }
+}
+
+/* Small Devices (Tablets) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+}
+
+/* Medium Devices (Laptops and Desktops) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+   .search-response{
+    width:90.5%;
+  }
+}
+
+/* Large Devices (Large Laptops and Desktops) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .search-response{
+    width:88.5%;
+  }
+}
+
+
+/* Extra Large Devices (Extra Large Desktops) */
+@media (min-width: 1200px) {
+  .search-response{
+    width:66.75%;
+  }
+}

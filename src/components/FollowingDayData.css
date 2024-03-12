@@ -1,0 +1,73 @@
+.following-days-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 85%;
+}
+
+.future-day-weather {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0003;
+  font-size: 1.2em;
+  color: white;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 1.5em 1.75em;
+  border-radius: 5px;
+}
+.future-day-weather div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 1.15em;
+}
+.future-day-weather span {
+  margin-top: 2px;
+  color: #99b8d6;
+  font-size: 0.75em;
+  text-transform: capitalize;
+}
+.future-day-weather .future-date {
+  font-size: 1.2em;
+}
+
+/* Extra Small Devices (Phones) */
+@media (max-width: 450px) {
+  .future-day-weather {
+    width: 88%;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    gap: 10px;
+    font-size: 0.85em;
+  }
+  .future-day-weather div {
+    flex-wrap: wrap;
+  }
+  .future-day-weather div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+@media (min-width: 451px) and (max-width: 767.98px) {
+  .future-day-weather {
+    width: 100%;
+
+    justify-content: space-evenly;
+    gap: 10px;
+    font-size: 0.75em;
+  }
+}
+
+/* Medium Devices (Laptops and Desktops) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .future-day-weather {
+    width: 100%;
+    gap: 10px;
+    font-size: 1em;
+  }
+}
