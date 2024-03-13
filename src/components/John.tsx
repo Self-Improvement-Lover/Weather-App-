@@ -3,7 +3,7 @@ import { FollowingDayData } from "./FollowingDayData";
 import {
   getCurrentDayData,
   temperatureToCorrectUnit,
-  giveUnitSign,
+  giveUnitSign
 } from "../utils";
 import "./John.css";
 import { DayForecast } from "../providers/weather-data-provider";
@@ -12,7 +12,7 @@ export function John({ data, celsius }: JohnProps) {
   if (data.length === 0) {
     return null;
   }
-console.log(data)
+  console.log(data);
   const [today, ...followingDays] = data;
 
   // Temp code
@@ -22,12 +22,19 @@ console.log(data)
     <section className="current-data-container">
       <div className="todays-data">
         <div className="major-data">
-          <span className="todays-date">{today.date}</span>
-          <img src={today.icon} alt={today.description} />
-
+          <span className="todays-date" data-testId={JohnTestIds.date}>
+            {today.date}
+          </span>
+          <img
+            src={today.icon}
+            alt={today.description}
+            data-testId={JohnTestIds.icon}
+          />
           <div className="todays-temp">
-            {today.temp}
-            {giveUnitSign(celsius)}
+            <span data-testId={JohnTestIds.temperature}>
+              {today.temp}
+              {giveUnitSign(celsius)}
+            </span>
             <span className="todays-description">temperature</span>
           </div>
         </div>
@@ -82,4 +89,8 @@ type JohnProps = {
   setCelsius: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-
+export const JohnTestIds = {
+  date: "john-test-id-date",
+  icon: "john-test-id-icon",
+  temperature: "john-test-id-temperature"
+};

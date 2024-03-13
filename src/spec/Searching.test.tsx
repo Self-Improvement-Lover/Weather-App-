@@ -1,12 +1,19 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import { App } from "../App";
-import { WeatherDataProvider } from "../providers/weather-data-provider";
+import {
+  DayForecast,
+  WeatherDataProvider
+} from "../providers/weather-data-provider";
 import { CitySearchProvider } from "../providers/city-search-provider";
 import { StubWeatherDataProvider } from "./stubs/stub-weather-data-provider";
 import { StubCitySearchProvider } from "./stubs/stub-city-search-provider";
+import { JohnTestIds } from "../components/John";
 
 describe("Searching", () => {
-  let getByPlaceholderText, queryByText: any, input: HTMLInputElement;
+  let getByPlaceholderText: ReturnType<typeof render>["getByPlaceholderText"],
+    queryByText: ReturnType<typeof render>["queryByText"],
+    queryByTestId: ReturnType<typeof render>["queryByTestId"],
+    input: HTMLInputElement;
   let weatherDataProvider: WeatherDataProvider;
   let citySearchProvider: CitySearchProvider;
 
@@ -25,7 +32,8 @@ describe("Searching", () => {
 
     getByPlaceholderText = renderResult.getByPlaceholderText;
     queryByText = renderResult.queryByText;
-    input = renderResult.getByPlaceholderText("Enter City");
+    queryByTestId = renderResult.queryByTestId;
+    input = renderResult.getByPlaceholderText("Enter City") as HTMLInputElement;
   });
 
   describe("When I type in 3 letters to search for a city (with uppercase)", () => {
@@ -33,17 +41,17 @@ describe("Searching", () => {
       jest.spyOn(citySearchProvider, "findCities").mockResolvedValue([
         {
           city: "London",
-          countryCode: "GB",
-        },
+          countryCode: "GB"
+        }
       ]);
 
       fireEvent.change(input, { target: { value: "Lon" } });
 
-      await new Promise((r) => setTimeout(r));
-      await new Promise((r) => setTimeout(r));
+      await new Promise(r => setTimeout(r));
+      await new Promise(r => setTimeout(r));
     });
 
-    test("The provider should be called as expected", async () => {
+    test("The provider should be called as expected to find matching cities", async () => {
       expect(citySearchProvider.findCities).toHaveBeenCalledWith("Lon");
     });
 
@@ -53,29 +61,95 @@ describe("Searching", () => {
     });
 
     describe("When I click on a suggestion", () => {
-      beforeEach(async () => {
-        jest.spyOn(weatherDataProvider, "getWeatherData").mockResolvedValue([]);
+      let stubForecastData: DayForecast[];
 
-        const suggestion = queryByText("London, GB");
+      beforeEach(async () => {
+        stubForecastData = [
+          {
+            date: "2024-03-13",
+            description: "Getting hot boy!",
+            feelsLike: 24,
+            humidity: 55,
+            icon: "https://test.com/good-weather-icon.png",
+            maxTemp: 25,
+            minTemp: 17,
+            pressure: 10,
+            temp: 23,
+            windSpeed: 5
+          },
+          {
+            date: "2024-03-14",
+            description: "Snowing",
+            feelsLike: -2,
+            humidity: 80,
+            icon: "https://test.com/super-cold-weather-icon.png",
+            maxTemp: -1,
+            minTemp: -46,
+            pressure: 100,
+            temp: -20,
+            windSpeed: 17
+          },
+          {
+            date: "2024-03-15",
+            description: "Raining",
+            feelsLike: 10,
+            humidity: 100,
+            icon: "https://test.com/raining-weather-icon.png",
+            maxTemp: 11,
+            minTemp: 2,
+            pressure: 20,
+            temp: 10,
+            windSpeed: 3
+          }
+        ];
+        jest
+          .spyOn(weatherDataProvider, "getWeatherData")
+          .mockResolvedValue(stubForecastData);
+
+        const suggestion = queryByText("London, GB")!;
         fireEvent.click(suggestion);
 
-        await new Promise((r) => setTimeout(r));
-        await new Promise((r) => setTimeout(r));
+        await new Promise(r => setTimeout(r));
+        await new Promise(r => setTimeout(r));
       });
 
       test("The selected city should be displayed in the search box", async () => {
         expect(input.value).toEqual("London");
       });
 
-      // TODO
-      test("The provider should be called as expected", async () => {
-        expect(citySearchProvider.findCities).toHaveBeenCalledWith("Lon");
-      });
-
-      // TODO - shouldnt this be equal to null, since London, GB would not be in the suggestions box
       test("The suggestion should no longer show", async () => {
         const suggestion = queryByText("London, GB");
-        expect(suggestion).not.toEqual(null);
+        expect(suggestion).toEqual(null);
+      });
+
+      test("The weather data for that city should be requested as expected", async () => {
+        expect(weatherDataProvider.getWeatherData).toHaveBeenCalledWith(
+          "London"
+        );
+      });
+
+      test.only("The weather data for that city should be displayed", async () => {
+        const [todaysData] = stubForecastData;
+        
+        expect(
+          (queryByTestId(JohnTestIds.date) as HTMLElement).textContent
+        ).toEqual(todaysData.date);
+        
+        const icon = queryByTestId(JohnTestIds.icon) as HTMLImageElement;
+        expect(icon.src).toEqual(todaysData.icon);
+        expect(icon.alt).toEqual(todaysData.description);
+        
+        expect(
+          (queryByTestId(JohnTestIds.temperature) as HTMLElement).textContent
+        ).toEqual(`${todaysData.temp}°C`);
+
+        // TODO - Finish writing these expectations
+        // TODO - Finish writing these expectations
+        // TODO - Finish writing these expectations
+        // TODO - Finish writing these expectations
+        // TODO - Finish writing these expectations
+        // TODO - Finish writing these expectations
+        // TODO - Finish writing these expectations
       });
     });
   });
@@ -85,14 +159,14 @@ describe("Searching", () => {
       jest.spyOn(citySearchProvider, "findCities").mockResolvedValue([
         {
           city: "London",
-          countryCode: "GB",
-        },
+          countryCode: "GB"
+        }
       ]);
 
       fireEvent.change(input, { target: { value: "lon" } });
 
-      await new Promise((r) => setTimeout(r));
-      await new Promise((r) => setTimeout(r));
+      await new Promise(r => setTimeout(r));
+      await new Promise(r => setTimeout(r));
     });
 
     test("The provider should be called as expected", async () => {
@@ -110,14 +184,14 @@ describe("Searching", () => {
       jest.spyOn(citySearchProvider, "findCities").mockResolvedValue([
         {
           city: "London",
-          countryCode: "GB",
-        },
+          countryCode: "GB"
+        }
       ]);
 
       fireEvent.change(input, { target: { value: "Lo" } });
 
-      await new Promise((r) => setTimeout(r));
-      await new Promise((r) => setTimeout(r));
+      await new Promise(r => setTimeout(r));
+      await new Promise(r => setTimeout(r));
     });
 
     test("The provider should not be called", async () => {
@@ -146,4 +220,3 @@ STUFF WE WONT BOTHER WITH (for now at least)
 */
 
 // projects specifically that you want me to do?
-
