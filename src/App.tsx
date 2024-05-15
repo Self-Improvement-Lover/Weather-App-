@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { John } from "./components/John";
 import {
   DayForecast,
-  WeatherDataProvider,
+  WeatherDataProvider
 } from "./providers/weather-data-provider";
 import "./App.css";
 import "./components/Search.css";
 import {
   CitySearchProvider,
-  CitySearchResult,
+  CitySearchResult
 } from "./providers/city-search-provider";
 
 type AppProps = {
@@ -64,7 +64,7 @@ export function App(props: AppProps) {
 
     try {
       const data = await weatherDataProvider.getWeatherData(suggestion.city);
-      console.log(data)
+      console.log(data);
       setForecastData(data);
       setGetWeatherError("");
     } catch (e) {
@@ -116,9 +116,10 @@ export function App(props: AppProps) {
           <input
             type="text"
             value={selectedSuggestion ? selectedSuggestion : search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={e => setSearch(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Enter City"
+            data-testId={AppTestIds.cityInput}
           />
           <button className="search-button" onClick={handleSearch}>
             <i className="fa-solid fa-magnifying-glass"></i>
@@ -126,7 +127,8 @@ export function App(props: AppProps) {
           <div className="unit-container">
             <button
               className="unit-button"
-              onClick={() => setCelsius(!celsius)}>
+              onClick={() => setCelsius(!celsius)}
+            >
               {celsius ? "°C" : "°F"}
             </button>
           </div>
@@ -138,9 +140,9 @@ export function App(props: AppProps) {
               autoSuggestions.map((suggestion, index) => (
                 <li
                   key={index}
-                  onClick={() =>
-                    handleSuggestionClick(suggestion)
-                  }>{`${suggestion.city}, ${suggestion.countryCode}`}</li>
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  data-testId={AppTestIds.suggestedCity}
+                >{`${suggestion.city}, ${suggestion.countryCode}`}</li>
               ))}
           </ul>
         </div>
@@ -155,3 +157,8 @@ export function App(props: AppProps) {
 }
 
 App.debounce = 600;
+
+export const AppTestIds = {
+  cityInput: "app-test-id-city-input",
+  suggestedCity: "app-test-id-suggested-city"
+};

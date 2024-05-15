@@ -41,29 +41,38 @@ export function John({ data, celsius }: JohnProps) {
 
         <div className="minor-data">
           <span className="temp-max">
-            {today.maxTemp}
-            {giveUnitSign(celsius)}
+            <span data-testId={JohnTestIds.temperatureMax}>
+              {today.maxTemp}
+              {giveUnitSign(celsius)}
+            </span>
             <span className="description">High</span>
           </span>
           <span className="temp-min">
-            {today.minTemp}
-            {giveUnitSign(celsius)}
+            <span data-testId={JohnTestIds.temperatureMin}>
+              {today.minTemp}
+              {giveUnitSign(celsius)}
+            </span>
             <span className="description">Low</span>
           </span>
           <span className="feels-like">
-            {today.feelsLike}
-            {giveUnitSign(celsius)}
+            <span data-testId={JohnTestIds.feelsLike}>
+              {today.feelsLike}
+              {giveUnitSign(celsius)}
+            </span>
             <span className="description">Feels</span>
           </span>
           <span className="pressure">
-            {today.pressure}hPa
+            <span data-testId={JohnTestIds.pressure}>{today.pressure}hPa</span>
             <span className="description"> Pressure</span>
           </span>
           <span className="humidity">
-            {today.humidity}%<span className="description">Humidity</span>
+            <span data-testId={JohnTestIds.humidity}>{today.humidity}%</span>
+            <span className="description">Humidity</span>
           </span>
           <span className="wind-speed">
-            {today.windSpeed}m/s
+            <span data-testId={JohnTestIds.windSpeed}>
+              {today.windSpeed}m/s
+            </span>
             <span className="description">Wind</span>
           </span>
         </div>
@@ -92,5 +101,11 @@ type JohnProps = {
 export const JohnTestIds = {
   date: "john-test-id-date",
   icon: "john-test-id-icon",
-  temperature: "john-test-id-temperature"
+  temperature: "john-test-id-temperature",
+  temperatureMax: "john-test-id-temperature-max",
+  temperatureMin: "john-test-id-temperature-min",
+  feelsLike: "john-test-id-feels-like",
+  pressure: "john-test-id-pressure",
+  humidity: "john-test-id-humidity",
+  windSpeed: "john-test-id-wind-speed"
 };
