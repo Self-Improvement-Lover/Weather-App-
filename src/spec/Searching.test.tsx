@@ -1,5 +1,5 @@
-import { render, fireEvent, queryByTestId } from "@testing-library/react";
-import { App, AppTestIds } from "../App";
+import { render } from "@testing-library/react";
+import { App } from "../App";
 import {
   DayForecast,
   WeatherDataProvider
@@ -7,14 +7,12 @@ import {
 import { CitySearchProvider } from "../providers/city-search-provider";
 import { StubWeatherDataProvider } from "./stubs/stub-weather-data-provider";
 import { StubCitySearchProvider } from "./stubs/stub-city-search-provider";
-import { JohnTestIds } from "../components/John";
-import { FollowingDayDataTestIds } from "../components/FollowingDayData";
+import { AppPageObject } from "./page-objects/app-page-object";
 
 describe("Searching", () => {
-  let queryByTestIdApp: ReturnType<typeof render>["queryByTestId"],
-    queryAllByTestIdApp: ReturnType<typeof render>["queryAllByTestId"];
   let weatherDataProvider: WeatherDataProvider;
   let citySearchProvider: CitySearchProvider;
+  let app: AppPageObject;
 
   beforeEach(() => {
     weatherDataProvider = new StubWeatherDataProvider();
@@ -29,8 +27,7 @@ describe("Searching", () => {
       />
     );
 
-    queryByTestIdApp = renderResult.queryByTestId;
-    queryAllByTestIdApp = renderResult.queryAllByTestId;
+    app = new AppPageObject(renderResult.baseElement);
   });
 
   describe("When I type in 3 letters to search for a city (with uppercase)", () => {
@@ -46,9 +43,7 @@ describe("Searching", () => {
         }
       ]);
 
-      fireEvent.change(queryByTestIdApp(AppTestIds.cityInput)!, {
-        target: { value: "Lon" }
-      });
+      app.cityInput.value = "Lon";
 
       await new Promise(r => setTimeout(r));
       await new Promise(r => setTimeout(r));
@@ -59,10 +54,10 @@ describe("Searching", () => {
     });
 
     test("I should see the city suggestions displayed", async () => {
-      const suggestions = queryAllByTestIdApp(AppTestIds.suggestedCity);
+      const suggestions = app.suggestedCities;
       expect(suggestions.length).toEqual(2);
-      expect(suggestions[0].textContent).toEqual("London, GB");
-      expect(suggestions[1].textContent).toEqual("Londonadra, CA");
+      expect(suggestions[0].text).toEqual("London, GB");
+      expect(suggestions[1].text).toEqual("Londonadra, CA");
     });
 
     describe("When I click on a suggestion", () => {
@@ -111,22 +106,20 @@ describe("Searching", () => {
           .spyOn(weatherDataProvider, "getWeatherData")
           .mockResolvedValue(stubForecastData);
 
-        const suggestions = queryAllByTestIdApp(AppTestIds.suggestedCity);
-        fireEvent.click(suggestions[0]);
+        const suggestions = app.suggestedCities;
+
+        suggestions[0].click();
 
         await new Promise(r => setTimeout(r));
         await new Promise(r => setTimeout(r));
       });
 
       test("The selected city should be displayed in the search box", async () => {
-        expect(
-          (queryByTestIdApp(AppTestIds.cityInput) as HTMLInputElement).value
-        ).toEqual("London");
+        expect(app.cityInput.value).toEqual("London");
       });
 
       test("The suggestions should no longer show", async () => {
-        const suggestions = queryAllByTestIdApp(AppTestIds.suggestedCity);
-        expect(suggestions.length).toEqual(0);
+        expect(app.suggestedCities.length).toEqual(0);
       });
 
       test("The weather data for that city should be requested as expected", async () => {
@@ -138,134 +131,38 @@ describe("Searching", () => {
       test("Todays weather data for that city should be displayed", async () => {
         const [todaysData] = stubForecastData;
 
-        expect(
-          (queryByTestIdApp(JohnTestIds.date) as HTMLElement).textContent
-        ).toEqual(todaysData.date);
-
-        const icon = queryByTestIdApp(JohnTestIds.icon) as HTMLImageElement;
-        expect(icon.src).toEqual(todaysData.icon);
-        expect(icon.alt).toEqual(todaysData.description);
-
-        expect(
-          (queryByTestIdApp(JohnTestIds.temperature) as HTMLElement).textContent
-        ).toEqual(`${todaysData.temp}°C`);
-
-        expect(
-          (queryByTestIdApp(JohnTestIds.temperatureMax) as HTMLElement)
-            .textContent
-        ).toEqual(`${todaysData.maxTemp}°C`);
-
-        expect(
-          (queryByTestIdApp(JohnTestIds.temperatureMin) as HTMLElement)
-            .textContent
-        ).toEqual(`${todaysData.minTemp}°C`);
-
-        expect(
-          (queryByTestIdApp(JohnTestIds.feelsLike) as HTMLElement).textContent
-        ).toEqual(`${todaysData.feelsLike}°C`);
-
-        expect(
-          (queryByTestIdApp(JohnTestIds.pressure) as HTMLElement).textContent
-        ).toEqual(`${todaysData.pressure}hPa`);
-
-        expect(
-          (queryByTestIdApp(JohnTestIds.humidity) as HTMLElement).textContent
-        ).toEqual(`${todaysData.humidity}%`);
-
-        expect(
-          (queryByTestIdApp(JohnTestIds.windSpeed) as HTMLElement).textContent
-        ).toEqual(`${todaysData.windSpeed}m/s`);
+        const today = app.todaysWeather;
+        expect(today.date.text).toEqual(todaysData.date);
+        expect(today.icon.src).toEqual(todaysData.icon);
+        expect(today.icon.alt).toEqual(todaysData.description);
+        expect(today.temperature.text).toEqual(`${todaysData.temp}°C`);
+        expect(today.temperatureMax.text).toEqual(`${todaysData.maxTemp}°C`);
+        expect(today.temperatureMin.text).toEqual(`${todaysData.minTemp}°C`);
+        expect(today.feelsLike.text).toEqual(`${todaysData.feelsLike}°C`);
+        expect(today.pressure.text).toEqual(`${todaysData.pressure}hPa`);
+        expect(today.humidity.text).toEqual(`${todaysData.humidity}%`);
+        expect(today.windSpeed.text).toEqual(`${todaysData.windSpeed}m/s`);
       });
 
       test("The following days' weather data for that city should be displayed", async () => {
-        const followingDays = queryAllByTestIdApp(
-          FollowingDayDataTestIds.container
-        );
+        const followingDays = app.followingDaysWeather;
 
         expect(followingDays.length).toEqual(stubForecastData.length - 1);
 
         for (let i = 1; i < stubForecastData.length; i++) {
           const data = stubForecastData[i];
-          const dayElement = followingDays[i - 1];
+          const day = followingDays[i - 1];
 
-          expect(
-            (
-              queryByTestId(
-                dayElement,
-                FollowingDayDataTestIds.date
-              ) as HTMLElement
-            ).textContent
-          ).toEqual(data.date);
-
-          const icon = queryByTestId(
-            dayElement,
-            FollowingDayDataTestIds.icon
-          ) as HTMLImageElement;
-          expect(icon.src).toEqual(data.icon);
-          expect(icon.alt).toEqual(data.description);
-
-          expect(
-            (
-              queryByTestId(
-                dayElement,
-                FollowingDayDataTestIds.temp
-              ) as HTMLElement
-            ).textContent
-          ).toEqual(`${data.temp} °C`);
-
-          expect(
-            (
-              queryByTestId(
-                dayElement,
-                FollowingDayDataTestIds.maxTemp
-              ) as HTMLElement
-            ).textContent
-          ).toEqual(`${data.maxTemp} °C`);
-
-          expect(
-            (
-              queryByTestId(
-                dayElement,
-                FollowingDayDataTestIds.minTemp
-              ) as HTMLElement
-            ).textContent
-          ).toEqual(`${data.minTemp}°C`);
-
-          expect(
-            (
-              queryByTestId(
-                dayElement,
-                FollowingDayDataTestIds.feelsLike
-              ) as HTMLElement
-            ).textContent
-          ).toEqual(`${data.feelsLike}°C`);
-
-          expect(
-            (
-              queryByTestId(
-                dayElement,
-                FollowingDayDataTestIds.pressure
-              ) as HTMLElement
-            ).textContent
-          ).toEqual(`${data.pressure}hPa`);
-
-          expect(
-            (
-              queryByTestId(
-                dayElement,
-                FollowingDayDataTestIds.humidity
-              ) as HTMLElement
-            ).textContent
-          ).toEqual(`${data.humidity}%`);
-
-          expect(
-            (
-              queryByTestId(
-                dayElement,
-                FollowingDayDataTestIds.windSpeed
-              ) as HTMLElement
-            ).textContent
-          ).toEqual(`${data.windSpeed}m/s`);
+          expect(day.date.text).toEqual(data.date);
+          expect(day.icon.src).toEqual(data.icon);
+          expect(day.icon.alt).toEqual(data.description);
+          expect(day.temperature.text).toEqual(`${data.temp}°C`);
+          expect(day.temperatureMax.text).toEqual(`${data.maxTemp}°C`);
+          expect(day.temperatureMin.text).toEqual(`${data.minTemp}°C`);
+          expect(day.feelsLike.text).toEqual(`${data.feelsLike}°C`);
+          expect(day.pressure.text).toEqual(`${data.pressure}hPa`);
+          expect(day.humidity.text).toEqual(`${data.humidity}%`);
+          expect(day.windSpeed.text).toEqual(`${data.windSpeed}m/s`);
         }
       });
     });
@@ -280,9 +177,7 @@ describe("Searching", () => {
         }
       ]);
 
-      fireEvent.change(queryByTestIdApp(AppTestIds.cityInput)!, {
-        target: { value: "lon" }
-      });
+      app.cityInput.value = "lon";
 
       await new Promise(r => setTimeout(r));
       await new Promise(r => setTimeout(r));
@@ -293,8 +188,7 @@ describe("Searching", () => {
     });
 
     test("I should see the city suggestions displayed", async () => {
-      const suggestions = queryAllByTestIdApp(AppTestIds.suggestedCity);
-      expect(suggestions.length).toEqual(1);
+      expect(app.suggestedCities.length).toEqual(1);
     });
   });
 
@@ -307,9 +201,7 @@ describe("Searching", () => {
         }
       ]);
 
-      fireEvent.change(queryByTestIdApp(AppTestIds.cityInput)!, {
-        target: { value: "Lo" }
-      });
+      app.cityInput.value = "Lo";
 
       await new Promise(r => setTimeout(r));
       await new Promise(r => setTimeout(r));
@@ -320,14 +212,12 @@ describe("Searching", () => {
     });
 
     test("I should not see any city suggestions displayed", async () => {
-      const suggestions = queryAllByTestIdApp(AppTestIds.suggestedCity);
-      expect(suggestions.length).toEqual(0);
+      expect(app.suggestedCities.length).toEqual(0);
     });
   });
 });
 
 /* 
-3B) Convert to use page objects
 5) Check the app still runs (it probably wont)
 6) Implement poor man's DI so that the App can run, as well as the tests.
 7) Write more tests for Data etc.

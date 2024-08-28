@@ -119,7 +119,7 @@ export function App(props: AppProps) {
             onChange={e => setSearch(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Enter City"
-            data-testId={AppTestIds.cityInput}
+            data-testid={AppTestIds.cityInput}
           />
           <button className="search-button" onClick={handleSearch}>
             <i className="fa-solid fa-magnifying-glass"></i>
@@ -141,7 +141,7 @@ export function App(props: AppProps) {
                 <li
                   key={index}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  data-testId={AppTestIds.suggestedCity}
+                  data-testid={AppTestIds.suggestedCity}
                 >{`${suggestion.city}, ${suggestion.countryCode}`}</li>
               ))}
           </ul>

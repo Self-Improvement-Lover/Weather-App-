@@ -9,56 +9,58 @@ export function FollowingDayData({
   return (
     <div
       className="future-day-weather"
-      data-testId={FollowingDayDataTestIds.container}
+      data-testid={FollowingDayDataTestIds.container}
     >
-      <div className="future-date" data-testId={FollowingDayDataTestIds.date}>
+      <div className="future-date" data-testid={FollowingDayDataTestIds.date}>
         {daysWeather.date}
       </div>
       <img
         src={daysWeather.icon}
         alt={daysWeather.description}
-        data-testId={FollowingDayDataTestIds.icon}
+        data-testid={FollowingDayDataTestIds.icon}
       />
       <div className="temperature">
-        <span data-testId={FollowingDayDataTestIds.temp}>
-          {daysWeather.temp} {giveUnitSign(celsius)}
+        <span data-testid={FollowingDayDataTestIds.temp}>
+          {daysWeather.temp}
+          {giveUnitSign(celsius)}
         </span>
         <span className="description">temperature</span>
       </div>
       <div className="future-highest-temp">
-        <span data-testId={FollowingDayDataTestIds.maxTemp}>
-          {daysWeather.maxTemp} {giveUnitSign(celsius)}
+        <span data-testid={FollowingDayDataTestIds.maxTemp}>
+          {daysWeather.maxTemp}
+          {giveUnitSign(celsius)}
         </span>
         <span className="description">high</span>
       </div>
       <div className="future-lowest-temp">
-        <span data-testId={FollowingDayDataTestIds.minTemp}>
+        <span data-testid={FollowingDayDataTestIds.minTemp}>
           {daysWeather.minTemp}
           {giveUnitSign(celsius)}
         </span>
         <span className="description">low</span>
       </div>
       <div className="future-feels-like">
-        <span data-testId={FollowingDayDataTestIds.feelsLike}>
+        <span data-testid={FollowingDayDataTestIds.feelsLike}>
           {daysWeather.feelsLike}
           {giveUnitSign(celsius)}
         </span>
         <span className="description">feels</span>
       </div>
       <div className="future-pressure">
-        <span data-testId={FollowingDayDataTestIds.pressure}>
+        <span data-testid={FollowingDayDataTestIds.pressure}>
           {daysWeather.pressure}hPa
         </span>
         <span className="description">pressure</span>
       </div>
       <div className="future-humidity">
-        <span data-testId={FollowingDayDataTestIds.humidity}>
+        <span data-testid={FollowingDayDataTestIds.humidity}>
           {daysWeather.humidity}%
         </span>
         <span className="description">humidity</span>
       </div>
       <div className="future-wind-speed">
-        <span data-testId={FollowingDayDataTestIds.windSpeed}>
+        <span data-testid={FollowingDayDataTestIds.windSpeed}>
           {daysWeather.windSpeed}m/s
         </span>
         <span className="description">wind</span>

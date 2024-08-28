@@ -20,18 +20,18 @@ export function John({ data, celsius }: JohnProps) {
 
   return (
     <section className="current-data-container">
-      <div className="todays-data">
+      <div className="todays-data" data-testid={JohnTestIds.container}>
         <div className="major-data">
-          <span className="todays-date" data-testId={JohnTestIds.date}>
+          <span className="todays-date" data-testid={JohnTestIds.date}>
             {today.date}
           </span>
           <img
             src={today.icon}
             alt={today.description}
-            data-testId={JohnTestIds.icon}
+            data-testid={JohnTestIds.icon}
           />
           <div className="todays-temp">
-            <span data-testId={JohnTestIds.temperature}>
+            <span data-testid={JohnTestIds.temperature}>
               {today.temp}
               {giveUnitSign(celsius)}
             </span>
@@ -41,36 +41,36 @@ export function John({ data, celsius }: JohnProps) {
 
         <div className="minor-data">
           <span className="temp-max">
-            <span data-testId={JohnTestIds.temperatureMax}>
+            <span data-testid={JohnTestIds.temperatureMax}>
               {today.maxTemp}
               {giveUnitSign(celsius)}
             </span>
             <span className="description">High</span>
           </span>
           <span className="temp-min">
-            <span data-testId={JohnTestIds.temperatureMin}>
+            <span data-testid={JohnTestIds.temperatureMin}>
               {today.minTemp}
               {giveUnitSign(celsius)}
             </span>
             <span className="description">Low</span>
           </span>
           <span className="feels-like">
-            <span data-testId={JohnTestIds.feelsLike}>
+            <span data-testid={JohnTestIds.feelsLike}>
               {today.feelsLike}
               {giveUnitSign(celsius)}
             </span>
             <span className="description">Feels</span>
           </span>
           <span className="pressure">
-            <span data-testId={JohnTestIds.pressure}>{today.pressure}hPa</span>
+            <span data-testid={JohnTestIds.pressure}>{today.pressure}hPa</span>
             <span className="description"> Pressure</span>
           </span>
           <span className="humidity">
-            <span data-testId={JohnTestIds.humidity}>{today.humidity}%</span>
+            <span data-testid={JohnTestIds.humidity}>{today.humidity}%</span>
             <span className="description">Humidity</span>
           </span>
           <span className="wind-speed">
-            <span data-testId={JohnTestIds.windSpeed}>
+            <span data-testid={JohnTestIds.windSpeed}>
               {today.windSpeed}m/s
             </span>
             <span className="description">Wind</span>
@@ -99,6 +99,7 @@ type JohnProps = {
 };
 
 export const JohnTestIds = {
+  container: "john-test-id-container",
   date: "john-test-id-date",
   icon: "john-test-id-icon",
   temperature: "john-test-id-temperature",
