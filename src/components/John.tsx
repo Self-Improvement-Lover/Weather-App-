@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { FollowingDayData } from "./FollowingDayData";
-import {
-  getCurrentDayData,
-  temperatureToCorrectUnit,
-  giveUnitSign
-} from "../utils";
+import { giveUnitSign } from "../utils";
 import "./John.css";
 import { DayForecast } from "../providers/weather-data-provider";
 
@@ -12,7 +8,6 @@ export function John({ data, celsius }: JohnProps) {
   if (data.length === 0) {
     return null;
   }
-  console.log(data);
   const [today, ...followingDays] = data;
 
   // Temp code

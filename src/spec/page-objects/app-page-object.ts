@@ -36,4 +36,10 @@ export class AppPageObject {
       ) as HTMLElement[]
     ).map(x => new FollowingDaysWeatherPageObject(x));
   }
+
+  get search() {
+    return new ElementPageObject(
+      queryByTestId(this.element, AppTestIds.searchButton) as HTMLInputElement
+    );
+  }
 }

@@ -1,15 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import { App } from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { GeoDBCitiesAPICitySearchProvider } from "./providers/geo-db-cities-api-city-search-provider";
+import { OpenWeatherMapWeatherDataProvider } from "./providers/open-weather-map-weather-data-provider";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <App
+      citySearchProvider={new GeoDBCitiesAPICitySearchProvider()}
+      weatherDataProvider={new OpenWeatherMapWeatherDataProvider()}
+    />
   </React.StrictMode>
 );
 

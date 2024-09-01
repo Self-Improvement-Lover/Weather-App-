@@ -21,24 +21,25 @@ export function App(props: AppProps) {
 
   const [celsius, setCelsius] = useState(true);
   const [forecastData, setForecastData] = useState<DayForecast[]>([]);
-  const [getWeatherError, setGetWeatherError] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   const [autoSuggestions, setAutoSuggestions] = useState<CitySearchResult[]>(
     []
   );
-  const [selectedSuggestion, setSelectedSuggestion] = useState("");
+  const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(
+    null
+  );
   const [showSuggestions, setShowSuggestions] = useState(true);
-  const [suggestionsError, setSuggestionsError] = useState("");
-  const [search, setSearch] = useState("");
+  const [cityInputText, setCityInputText] = useState("");
   // in css, make sure to hide all data when search is empty
   async function getAutoSuggestions() {
     try {
-      const suggestions = await citySearchProvider.findCities(search);
+      const suggestions = await citySearchProvider.findCities(cityInputText);
       setAutoSuggestions(suggestions);
-      setSuggestionsError("");
+      setError(null);
     } catch (error: any) {
       console.error("AutoComplete Fetch Error:" + error);
-      setSuggestionsError(error.message + ". Please try again");
+      setError(error.message + ". Please try again");
       setAutoSuggestions([]);
       setForecastData([]);
     }
@@ -46,7 +47,7 @@ export function App(props: AppProps) {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      if (search.trim().length >= 3) {
+      if (cityInputText.trim().length >= 3) {
         getAutoSuggestions();
       } else {
         setAutoSuggestions([]);
@@ -55,25 +56,25 @@ export function App(props: AppProps) {
     }, App.debounce);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [search]);
+  }, [cityInputText]);
 
   async function handleSuggestionClick(suggestion: CitySearchResult) {
-    setSearch(suggestion.city);
+    setCityInputText(suggestion.city);
     setSelectedSuggestion(suggestion.city);
     setShowSuggestions(false);
 
     try {
       const data = await weatherDataProvider.getWeatherData(suggestion.city);
-      console.log(data);
       setForecastData(data);
-      setGetWeatherError("");
+      setError(null);
     } catch (e) {
       setForecastData([]);
-      setGetWeatherError(
+      setError(
         "There was an Error getting the data, please check spelling and try again"
       );
     }
   }
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
     if (selectedSuggestion && e.key === "Backspace") {
       setShowSuggestions(true);
@@ -83,46 +84,50 @@ export function App(props: AppProps) {
       handleSearch();
     }
     if (e.currentTarget?.value.length <= 3 && e.key === "Enter") {
-      setSuggestionsError("Please enter a city with more than 3 characters");
+      setError("Please enter a city with more than 3 characters");
     } else {
-      setSuggestionsError("");
+      setError(null);
     }
-    setSelectedSuggestion("");
-    setSearch(e.currentTarget?.value);
-    setGetWeatherError("");
+    setSelectedSuggestion(null);
+    setCityInputText(e.currentTarget?.value);
+    setError(null);
   }
 
   async function handleSearch() {
-    if (search.length <= 3) {
+    if (cityInputText.length <= 3) {
       return null;
     }
     setShowSuggestions(false);
 
     try {
-      const data = await weatherDataProvider.getWeatherData(search);
+      const data = await weatherDataProvider.getWeatherData(cityInputText);
       setForecastData(data);
-      setGetWeatherError("");
+      setError(null);
     } catch (e) {
       setForecastData([]);
-      setGetWeatherError(
+      setError(
         "There was an Error getting the data, please check spelling and try again"
       );
     }
   }
   return (
     <section>
-      <article className="search-container">
+      <div className="search-container">
         <div className="search-area">
           <input
             type="text"
-            value={selectedSuggestion ? selectedSuggestion : search}
-            onChange={e => setSearch(e.target.value)}
+            value={selectedSuggestion ? selectedSuggestion : cityInputText}
+            onChange={e => setCityInputText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Enter City"
+            placeholder="Enter city name"
             data-testid={AppTestIds.cityInput}
           />
-          <button className="search-button" onClick={handleSearch}>
-            <i className="fa-solid fa-magnifying-glass"></i>
+          <button
+            className="search-button"
+            onClick={handleSearch}
+            data-testid={AppTestIds.searchButton}
+          >
+            Search
           </button>
           <div className="unit-container">
             <button
@@ -134,7 +139,6 @@ export function App(props: AppProps) {
           </div>
         </div>
         <div className="search-response">
-          {suggestionsError && <div className="error">{suggestionsError}</div>}
           <ul className="suggestions">
             {showSuggestions &&
               autoSuggestions.map((suggestion, index) => (
@@ -146,9 +150,9 @@ export function App(props: AppProps) {
               ))}
           </ul>
         </div>
-      </article>
-      {getWeatherError ? (
-        <div className="error">{getWeatherError}</div>
+      </div>
+      {error ? (
+        <div className="error">{error}</div>
       ) : (
         <John data={forecastData} celsius={celsius} setCelsius={setCelsius} />
       )}
@@ -160,5 +164,6 @@ App.debounce = 600;
 
 export const AppTestIds = {
   cityInput: "app-test-id-city-input",
+  searchButton: "app-test-id-search-button",
   suggestedCity: "app-test-id-suggested-city"
 };
