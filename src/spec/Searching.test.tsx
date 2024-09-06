@@ -475,3 +475,151 @@ STUFF WE WONT BOTHER WITH (for now at least)
 // When I type something
 // And I press backspace
 // This should happen
+
+/*
+---------------------------------------------------------------------------------------------------------
+
+- When gibberish is entered, 3 characters which is not a city name is entered  
+- enter button is pressed
+- No suggestions should show. 
+- Error (for when its searched for, not because suggestions does not come up) should
+be show saying 'There was an error getting the data, please check spelling and try again' 
+---------------------------------------------------------------------------------------------------------
+
+Celsius button tests: 
+
+// when celsius button is clicked once before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and button is clicked 
+// The results should be shown in Fahrenheit 
+
+
+// when celsius button is clicked twice before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and button is clicked 
+// The results should be shown in celsius 
+
+
+// when celsius button is clicked three times before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and button is clicked 
+// The results should be shown in Fahrenheit 
+
+
+// when celsius button is clicked once before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and enter is pressed 
+// The results should be shown in Fahrenheit 
+
+
+// when celsius button is clicked twice before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and enter is pressed 
+// The results should be shown in celsius 
+
+
+// when celsius button is clicked three times before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and enter is pressed 
+// The results should be shown in Fahrenheit 
+
+---------------------------------------------------------------------------------------------------------
+
+When same text is searched more than once: 
+
+// when a valid city input is entered(e.g. London)
+// and button is clicked twice 
+// should only call weatherData API once 
+
+// when a invalid city text(more than 3 characters, but not a city name) is entered 
+// and button is clicked twice 
+// should still only call weatherData API once
+// should show error 'There was an error getting the data, please check spelling and try again'
+
+// when a valid city text is entered 
+// and enter button is pressed twice 
+// should only call weatherData API once 
+
+// when a invalid city text(more than 3 characters) is entered 
+// and enter button is pressed twice 
+// should still only call weatherData API once 
+// should show error 'There was an error getting the data, please check spelling and try again'
+
+---------------------------------------------------------------------------------------------------------
+Backspace pressed:
+
+// when text is in search box
+// backspace button is pressed 
+// texts last character should be deleted 
+
+
+// when a valid city text is in search box
+// the suggestions should show
+// then when search button is clicked 
+// data should be shown/displayed  
+// then search button is clicked again
+// backspace button is clicked once
+// texts last character should be deleted 
+// same data should still show 
+
+
+// when text is in search box
+// backspace button is clicked multiple times(e.g 3times )
+// texts last 3 characters should be deleted 
+
+
+// when a valid city text is in search box
+// the suggestions should show
+// then when search enter is pressed 
+// data should be shown/displayed  
+// then enter button is pressed again
+// backspace button is clicked once
+// texts last character should be deleted 
+// same data should still show 
+
+
+
+
+---------------------------------------------------------------------------------------------------------
+with country code:
+// when text with a city name with comma and space then country code is entered(e.g london, GB)
+// then search button is clicked
+// data should be displayed
+
+// text with a city name with comma and no space then country code(e.g london,GB)
+// then search button is clicked
+// data should be displayed
+
+// text with a city name with comma and space then country code(e.g london, GB)
+// then enter button is pressed
+// data should be displayed
+
+// text with a city name with comma and no space then country code(e.g london,GB)
+// then enter button is pressed
+// data should be displayed
+---------------------------------------------------------------------------------------------------------
+
+tests just for enter button with boundary errors(part of code untested for it):
+
+// when less than 3 characters are entered
+// enter button is pressed
+// their should be no call made to citySearch provider 
+
+
+// when 3 characters are entered(e.g lon)
+// enter button is pressed
+// their should be a call made to citySearch provider 
+--------------------------------------------------------------------------------------------------------
+when suggestions come up, a suggested is clicked, but was not able to retrieve data for city
+
+// when you enter a valid city input (e.g. Barisal Sadar Upazila)
+// the suggestions come up
+// you click it 
+// and an error occurs whilst trying to get data
+// error should be "No data was found for this city"
+
+
+
+
+
+*/
