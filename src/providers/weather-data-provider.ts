@@ -19,3 +19,5 @@ export type DayForecast = {
   icon: string;
   description: string;
 };
+
+export class CityNotFoundError extends Error {}

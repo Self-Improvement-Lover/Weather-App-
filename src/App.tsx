@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { John } from "./components/John";
 import {
+  CityNotFoundError,
   DayForecast,
   WeatherDataProvider
 } from "./providers/weather-data-provider";
@@ -69,9 +70,11 @@ export function App(props: AppProps) {
       setError(null);
     } catch (e) {
       setForecastData([]);
-      setError(
-        "There was an Error getting the data, please check spelling and try again"
-      );
+      if (e instanceof CityNotFoundError) {
+        setError(
+          "The city was not found. Please check spelling and try again."
+        );
+      }
     }
   }
 
@@ -105,9 +108,11 @@ export function App(props: AppProps) {
       setError(null);
     } catch (e) {
       setForecastData([]);
-      setError(
-        "There was an Error getting the data, please check spelling and try again"
-      );
+      if (e instanceof CityNotFoundError) {
+        setError(
+          "The city was not found. Please check spelling and try again."
+        );
+      }
     }
   }
   return (
@@ -152,7 +157,9 @@ export function App(props: AppProps) {
         </div>
       </div>
       {error ? (
-        <div className="error">{error}</div>
+        <div className="error" data-testid={AppTestIds.error}>
+          {error}
+        </div>
       ) : (
         <John data={forecastData} celsius={celsius} setCelsius={setCelsius} />
       )}
@@ -165,5 +172,6 @@ App.debounce = 600;
 export const AppTestIds = {
   cityInput: "app-test-id-city-input",
   searchButton: "app-test-id-search-button",
-  suggestedCity: "app-test-id-suggested-city"
+  suggestedCity: "app-test-id-suggested-city",
+  error: "app-test-id-error"
 };

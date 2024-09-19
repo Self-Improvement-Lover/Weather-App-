@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react";
 import { App } from "../App";
 import {
+  CityNotFoundError,
   DayForecast,
   WeatherDataProvider
 } from "../providers/weather-data-provider";
@@ -460,6 +461,56 @@ describe("Searching", () => {
         }
       });
     });
+
+    describe("When I click search anyway and the city can not be found", () => {
+      beforeEach(async () => {
+        jest
+          .spyOn(weatherDataProvider, "getWeatherData")
+          .mockRejectedValue(new CityNotFoundError());
+
+        app.search.click();
+
+        await new Promise(r => setTimeout(r));
+        await new Promise(r => setTimeout(r));
+      });
+
+      test("The city should remain in the search box", async () => {
+        expect(app.cityInput.value).toEqual("New City");
+      });
+
+      test("No weather data for that city should not be displayed and an error message should appear", async () => {
+        expect(app.todaysWeather.isDisplayed).toEqual(false);
+        expect(app.error.isDisplayed).toEqual(true);
+        expect(app.error.text).toEqual(
+          "The city was not found. Please check spelling and try again."
+        );
+      });
+    });
+
+    describe("When I press Enter anyway and the city can not be found", () => {
+      beforeEach(async () => {
+        jest
+          .spyOn(weatherDataProvider, "getWeatherData")
+          .mockRejectedValue(new CityNotFoundError());
+
+        app.cityInput.pressEnter();
+
+        await new Promise(r => setTimeout(r));
+        await new Promise(r => setTimeout(r));
+      });
+
+      test("The city should remain in the search box", async () => {
+        expect(app.cityInput.value).toEqual("New City");
+      });
+
+      test("No weather data for that city should not be displayed and an error message should appear", async () => {
+        expect(app.todaysWeather.isDisplayed).toEqual(false);
+        expect(app.error.isDisplayed).toEqual(true);
+        expect(app.error.text).toEqual(
+          "The city was not found. Please check spelling and try again."
+        );
+      });
+    });
   });
 });
 
@@ -470,21 +521,6 @@ describe("Searching", () => {
 
 STUFF WE WONT BOTHER WITH (for now at least)
 1) Moving specs out of the src folder
-*/
-
-// When I type something
-// And I press backspace
-// This should happen
-
-/*
----------------------------------------------------------------------------------------------------------
-
-- When gibberish is entered, 3 characters which is not a city name is entered  
-- enter button is pressed
-- No suggestions should show. 
-- Error (for when its searched for, not because suggestions does not come up) should
-be show saying 'There was an error getting the data, please check spelling and try again' 
----------------------------------------------------------------------------------------------------------
 
 Celsius button tests: 
 
@@ -577,9 +613,6 @@ Backspace pressed:
 // texts last character should be deleted 
 // same data should still show 
 
-
-
-
 ---------------------------------------------------------------------------------------------------------
 with country code:
 // when text with a city name with comma and space then country code is entered(e.g london, GB)
@@ -617,9 +650,5 @@ when suggestions come up, a suggested is clicked, but was not able to retrieve d
 // you click it 
 // and an error occurs whilst trying to get data
 // error should be "No data was found for this city"
-
-
-
-
 
 */

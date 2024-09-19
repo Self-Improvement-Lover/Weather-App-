@@ -12,4 +12,9 @@ describe.skip("Open Weather Map Weather Data Provider", () => {
     const result = await provider.getWeatherData("London");
     expect(result).toEqual([]);
   });
+
+  it("Should return data as expected", async () => {
+    const result = await provider.getWeatherData("dasdasdasdasdasd");
+    expect(result).toEqual([]);
+  });
 });

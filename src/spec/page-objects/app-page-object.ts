@@ -28,6 +28,12 @@ export class AppPageObject {
     );
   }
 
+  get error() {
+    return new ElementPageObject(
+      queryByTestId(this.element, AppTestIds.error) as HTMLElement
+    );
+  }
+
   get followingDaysWeather() {
     return (
       queryAllByTestId(

@@ -1,4 +1,8 @@
-import { DayForecast, WeatherDataProvider } from "./weather-data-provider";
+import {
+  CityNotFoundError,
+  DayForecast,
+  WeatherDataProvider
+} from "./weather-data-provider";
 
 export class OpenWeatherMapWeatherDataProvider extends WeatherDataProvider {
   async getWeatherData(city: string): Promise<DayForecast[]> {
@@ -6,7 +10,19 @@ export class OpenWeatherMapWeatherDataProvider extends WeatherDataProvider {
       `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${process.env.REACT_APP_OPEN_WEATHER_API_KEY}`
     );
     if (!response.ok) {
-      throw Error("An error occurred whilst trying to fetch the data");
+      try {
+        const json = await response.json();
+        if (json.message === "city not found") {
+          throw new CityNotFoundError();
+        }
+      } catch (e) {
+        console.error("Error deserialising the response");
+      }
+      throw new Error(
+        `Error from OpenWeatherMap API. Status Code: ${
+          response.status
+        }. Body: ${await response.text()}`
+      );
     }
     const data: OpenWeatherMapWeatherForecastResponse = await response.json();
     const dataForDays = new Map<string, OpenWeatherMapWeatherDataObject[]>([]);
@@ -38,26 +54,24 @@ export class OpenWeatherMapWeatherDataProvider extends WeatherDataProvider {
       forecasts.push({
         date,
         description: getMostRepeatedValue(
-          periods.map((x) => x.weather[0].description)
+          periods.map(x => x.weather[0].description)
         ),
         icon: `https://openweathermap.org/img/w/${getMostRepeatedValue(
-          periods.map((x) => x.weather[0].icon)
+          periods.map(x => x.weather[0].icon)
         )}.png`,
         maxTemp: to2DP(
-          kelvinToCelsius(Math.max(...periods.map((x) => x.main.temp_max)))
+          kelvinToCelsius(Math.max(...periods.map(x => x.main.temp_max)))
         ),
         minTemp: to2DP(
-          kelvinToCelsius(Math.min(...periods.map((x) => x.main.temp_min)))
+          kelvinToCelsius(Math.min(...periods.map(x => x.main.temp_min)))
         ),
         feelsLike: to2DP(
-          kelvinToCelsius(getAverage(periods.map((x) => x.main.feels_like)))
+          kelvinToCelsius(getAverage(periods.map(x => x.main.feels_like)))
         ),
-        humidity: to2DP(getAverage(periods.map((x) => x.main.humidity))),
-        pressure: to2DP(getAverage(periods.map((x) => x.main.pressure))),
-        temp: to2DP(
-          kelvinToCelsius(getAverage(periods.map((x) => x.main.temp)))
-        ),
-        windSpeed: to2DP(getAverage(periods.map((x) => x.wind.speed))),
+        humidity: to2DP(getAverage(periods.map(x => x.main.humidity))),
+        pressure: to2DP(getAverage(periods.map(x => x.main.pressure))),
+        temp: to2DP(kelvinToCelsius(getAverage(periods.map(x => x.main.temp)))),
+        windSpeed: to2DP(getAverage(periods.map(x => x.wind.speed)))
       });
     }
     return forecasts;

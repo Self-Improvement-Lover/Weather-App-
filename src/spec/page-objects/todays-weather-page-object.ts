@@ -3,8 +3,10 @@ import { JohnTestIds } from "../../components/John";
 import { ElementPageObject } from "./element-page-object";
 import { ImagePageObject } from "./image-page-object";
 
-export class TodaysWeatherPageObject {
-  constructor(private element: HTMLElement) { }
+export class TodaysWeatherPageObject extends ElementPageObject {
+  constructor(element: HTMLElement) {
+    super(element);
+  }
 
   get date() {
     return new ElementPageObject(
