@@ -10,13 +10,14 @@ export class OpenWeatherMapWeatherDataProvider extends WeatherDataProvider {
       `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${process.env.REACT_APP_OPEN_WEATHER_API_KEY}`
     );
     if (!response.ok) {
+      let json;
       try {
-        const json = await response.json();
-        if (json.message === "city not found") {
-          throw new CityNotFoundError();
-        }
+        json = await response.json();
       } catch (e) {
         console.error("Error deserialising the response");
+      }
+      if (json.message === "city not found") {
+        throw new CityNotFoundError();
       }
       throw new Error(
         `Error from OpenWeatherMap API. Status Code: ${

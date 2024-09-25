@@ -317,6 +317,7 @@ describe("Searching", () => {
       });
 
       test("The weather data for that city should be requested as expected", async () => {
+        expect(weatherDataProvider.getWeatherData).toBeCalledTimes(1);
         expect(weatherDataProvider.getWeatherData).toHaveBeenCalledWith(
           "New City"
         );
@@ -358,6 +359,17 @@ describe("Searching", () => {
           expect(day.humidity.text).toEqual(`${data.humidity}%`);
           expect(day.windSpeed.text).toEqual(`${data.windSpeed}m/s`);
         }
+      });
+
+      describe("When I click search again", () => {
+        beforeEach(async () => {
+          app.search.click();
+          await new Promise(r => setTimeout(r));
+        });
+
+        test.skip("The weather data should not be retreived again", async () => {
+          expect(weatherDataProvider.getWeatherData).toBeCalledTimes(1);
+        });
       });
     });
 
@@ -460,6 +472,17 @@ describe("Searching", () => {
           expect(day.windSpeed.text).toEqual(`${data.windSpeed}m/s`);
         }
       });
+
+      describe("When I press Enter again", () => {
+        beforeEach(async () => {
+          app.cityInput.pressEnter();
+          await new Promise(r => setTimeout(r));
+        });
+
+        test.skip("The weather data should not be retreived again", async () => {
+          expect(weatherDataProvider.getWeatherData).toBeCalledTimes(1);
+        });
+      });
     });
 
     describe("When I click search anyway and the city can not be found", () => {
@@ -474,6 +497,13 @@ describe("Searching", () => {
         await new Promise(r => setTimeout(r));
       });
 
+      test("The weather data for that city should be requested as expected", async () => {
+        expect(weatherDataProvider.getWeatherData).toBeCalledTimes(1);
+        expect(weatherDataProvider.getWeatherData).toHaveBeenCalledWith(
+          "New City"
+        );
+      });
+
       test("The city should remain in the search box", async () => {
         expect(app.cityInput.value).toEqual("New City");
       });
@@ -484,6 +514,17 @@ describe("Searching", () => {
         expect(app.error.text).toEqual(
           "The city was not found. Please check spelling and try again."
         );
+      });
+
+      describe("When I click search again", () => {
+        beforeEach(async () => {
+          app.search.click();
+          await new Promise(r => setTimeout(r));
+        });
+
+        test.skip("The weather data should not be retreived again", async () => {
+          expect(weatherDataProvider.getWeatherData).toBeCalledTimes(1);
+        });
       });
     });
 
@@ -499,6 +540,13 @@ describe("Searching", () => {
         await new Promise(r => setTimeout(r));
       });
 
+      test("The weather data for that city should be requested as expected", async () => {
+        expect(weatherDataProvider.getWeatherData).toBeCalledTimes(1);
+        expect(weatherDataProvider.getWeatherData).toHaveBeenCalledWith(
+          "New City"
+        );
+      });
+
       test("The city should remain in the search box", async () => {
         expect(app.cityInput.value).toEqual("New City");
       });
@@ -509,6 +557,78 @@ describe("Searching", () => {
         expect(app.error.text).toEqual(
           "The city was not found. Please check spelling and try again."
         );
+      });
+
+      describe("When I press Enter again", () => {
+        beforeEach(async () => {
+          app.cityInput.pressEnter();
+          await new Promise(r => setTimeout(r));
+        });
+
+        test.skip("The weather data should not be retreived again", async () => {
+          expect(weatherDataProvider.getWeatherData).toBeCalledTimes(1);
+        });
+      });
+    });
+  });
+
+  describe("Backspace button", () => {
+    describe("When I some text for which there are suggested cities", () => {
+      beforeEach(async () => {
+        jest.spyOn(citySearchProvider, "findCities").mockResolvedValue([
+          {
+            city: "London",
+            countryCode: "GB"
+          },
+          {
+            city: "Londonadra",
+            countryCode: "CA"
+          }
+        ]);
+
+        app.cityInput.value = "Lon";
+
+        await new Promise(r => setTimeout(r));
+        await new Promise(r => setTimeout(r));
+      });
+
+      test("I should see the city suggestions displayed", async () => {
+        const suggestions = app.suggestedCities;
+        expect(suggestions.length).toEqual(2);
+        expect(suggestions[0].text).toEqual("London, GB");
+        expect(suggestions[1].text).toEqual("Londonadra, CA");
+      });
+
+      describe("When I press the Enter button", () => {
+        beforeEach(async () => {
+          app.cityInput.pressEnter();
+          await new Promise(r => setTimeout(r));
+        });
+
+        test("The suggestions should no longer be displayed", async () => {
+          const suggestions = app.suggestedCities;
+          expect(suggestions.length).toEqual(0);
+        });
+
+        describe("When I press the Backspace button", () => {
+          beforeEach(async () => {
+            app.cityInput.pressBackspace();
+            await new Promise(r => setTimeout(r));
+          });
+
+          test("The text in the input should be as expected", async () => {
+            expect(app.cityInput.value).toEqual("Lo");
+          });
+
+          test.skip("The suggestions provider should be called again, this time with the new value", async () => {
+            expect(citySearchProvider.findCities).toHaveBeenCalledWith("Lo");
+          });
+
+          test.skip("The suggestions should be displayed again", async () => {
+            const suggestions = app.suggestedCities;
+            expect(suggestions.length).toEqual(2);
+          });
+        });
       });
     });
   });
@@ -522,71 +642,14 @@ describe("Searching", () => {
 STUFF WE WONT BOTHER WITH (for now at least)
 1) Moving specs out of the src folder
 
-Celsius button tests: 
-
-// when celsius button is clicked once before the search for weather data occurs 
-// valid text is inputted, e.g london
-// and button is clicked 
-// The results should be shown in Fahrenheit 
-
-
-// when celsius button is clicked twice before the search for weather data occurs 
-// valid text is inputted, e.g london
-// and button is clicked 
-// The results should be shown in celsius 
-
-
-// when celsius button is clicked three times before the search for weather data occurs 
-// valid text is inputted, e.g london
-// and button is clicked 
-// The results should be shown in Fahrenheit 
-
-
-// when celsius button is clicked once before the search for weather data occurs 
-// valid text is inputted, e.g london
-// and enter is pressed 
-// The results should be shown in Fahrenheit 
-
-
-// when celsius button is clicked twice before the search for weather data occurs 
-// valid text is inputted, e.g london
-// and enter is pressed 
-// The results should be shown in celsius 
-
-
-// when celsius button is clicked three times before the search for weather data occurs 
-// valid text is inputted, e.g london
-// and enter is pressed 
-// The results should be shown in Fahrenheit 
-
----------------------------------------------------------------------------------------------------------
-
-When same text is searched more than once: 
-
-// when a valid city input is entered(e.g. London)
-// and button is clicked twice 
-// should only call weatherData API once 
-
-// when a invalid city text(more than 3 characters, but not a city name) is entered 
-// and button is clicked twice 
-// should still only call weatherData API once
-// should show error 'There was an error getting the data, please check spelling and try again'
-
-// when a valid city text is entered 
-// and enter button is pressed twice 
-// should only call weatherData API once 
-
-// when a invalid city text(more than 3 characters) is entered 
-// and enter button is pressed twice 
-// should still only call weatherData API once 
-// should show error 'There was an error getting the data, please check spelling and try again'
-
 ---------------------------------------------------------------------------------------------------------
 Backspace pressed:
 
 // when text is in search box
 // backspace button is pressed 
 // texts last character should be deleted 
+
+We wrote some of these but we need more to cover the backspace functionality when clicking on search results (rather than just using enter)
 
 
 // when a valid city text is in search box
@@ -650,5 +713,47 @@ when suggestions come up, a suggested is clicked, but was not able to retrieve d
 // you click it 
 // and an error occurs whilst trying to get data
 // error should be "No data was found for this city"
+
+
+
+Celsius button tests: 
+
+// when celsius button is clicked once before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and button is clicked 
+// The results should be shown in Fahrenheit 
+
+
+// when celsius button is clicked twice before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and button is clicked 
+// The results should be shown in celsius 
+
+
+// when celsius button is clicked three times before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and button is clicked 
+// The results should be shown in Fahrenheit 
+
+
+// when celsius button is clicked once before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and enter is pressed 
+// The results should be shown in Fahrenheit 
+
+
+// when celsius button is clicked twice before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and enter is pressed 
+// The results should be shown in celsius 
+
+
+// when celsius button is clicked three times before the search for weather data occurs 
+// valid text is inputted, e.g london
+// and enter is pressed 
+// The results should be shown in Fahrenheit 
+
+---------------------------------------------------------------------------------------------------------
+
 
 */
