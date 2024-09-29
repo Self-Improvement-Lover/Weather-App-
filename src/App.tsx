@@ -24,35 +24,18 @@ export function App(props: AppProps) {
   const [forecastData, setForecastData] = useState<DayForecast[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const [autoSuggestions, setAutoSuggestions] = useState<CitySearchResult[]>(
-    []
-  );
-  const [selectedSuggestion, setSelectedSuggestion] = useState<string | null>(
-    null
-  );
+  const [suggestions, setSuggestions] = useState<CitySearchResult[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(true);
   const [cityInputText, setCityInputText] = useState("");
   // in css, make sure to hide all data when search is empty
-  async function getAutoSuggestions() {
-    try {
-      const suggestions = await citySearchProvider.findCities(cityInputText);
-      setAutoSuggestions(suggestions);
-      setError(null);
-    } catch (error: any) {
-      console.error("AutoComplete Fetch Error:" + error);
-      setError(error.message + ". Please try again");
-      setAutoSuggestions([]);
-      setForecastData([]);
-    }
-  }
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
+    const delayDebounceFn = setTimeout(async () => {
       if (cityInputText.trim().length >= 3) {
-        getAutoSuggestions();
+        const suggestions = await citySearchProvider.findCities(cityInputText);
+        setSuggestions(suggestions);
       } else {
-        setAutoSuggestions([]);
-        setForecastData([]);
+        setSuggestions([]);
       }
     }, App.debounce);
 
@@ -60,9 +43,9 @@ export function App(props: AppProps) {
   }, [cityInputText]);
 
   async function handleSuggestionClick(suggestion: CitySearchResult) {
+    console.log("Suggestion is clicked");
+
     setCityInputText(suggestion.city);
-    setSelectedSuggestion(suggestion.city);
-    setShowSuggestions(false);
 
     try {
       const data = await weatherDataProvider.getWeatherData(suggestion.city);
@@ -78,30 +61,10 @@ export function App(props: AppProps) {
     }
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>): void {
-    if (selectedSuggestion && e.key === "Backspace") {
-      setShowSuggestions(true);
-    }
-    if (e.key === "Enter") {
-      setShowSuggestions(false);
-      handleSearch();
-    }
-    if (e.currentTarget?.value.length <= 3 && e.key === "Enter") {
-      setError("Please enter a city with more than 3 characters");
-    } else {
-      setError(null);
-    }
-    setSelectedSuggestion(null);
-    setCityInputText(e.currentTarget?.value);
-    setError(null);
-  }
-
   async function handleSearch() {
     if (cityInputText.length <= 3) {
       return null;
     }
-    setShowSuggestions(false);
-
     try {
       const data = await weatherDataProvider.getWeatherData(cityInputText);
       setForecastData(data);
@@ -121,9 +84,15 @@ export function App(props: AppProps) {
         <div className="search-area">
           <input
             type="text"
-            value={selectedSuggestion ? selectedSuggestion : cityInputText}
+            value={cityInputText}
             onChange={e => setCityInputText(e.target.value)}
-            onKeyDown={handleKeyDown}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => {
+              setTimeout(() => {
+                console.log("Hiding suggestions");
+                setShowSuggestions(false);
+              }, 1000);
+            }}
             placeholder="Enter city name"
             data-testid={AppTestIds.cityInput}
           />
@@ -146,7 +115,7 @@ export function App(props: AppProps) {
         <div className="search-response">
           <ul className="suggestions">
             {showSuggestions &&
-              autoSuggestions.map((suggestion, index) => (
+              suggestions.map((suggestion, index) => (
                 <li
                   key={index}
                   onClick={() => handleSuggestionClick(suggestion)}

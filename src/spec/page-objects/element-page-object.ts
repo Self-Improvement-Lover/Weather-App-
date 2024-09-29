@@ -1,7 +1,7 @@
-import { fireEvent } from "@testing-library/react";
+import { UserEvent } from "@testing-library/user-event";
 
 export class ElementPageObject {
-  constructor(protected element: HTMLElement) { }
+  constructor(protected element: HTMLElement, protected userState: UserEvent) {}
 
   get isDisplayed() {
     return this.element !== null;
@@ -11,7 +11,7 @@ export class ElementPageObject {
     return this.element.textContent;
   }
 
-  click() {
-    fireEvent.click(this.element);
+  async click() {
+    await this.userState.click(this.element);
   }
 }

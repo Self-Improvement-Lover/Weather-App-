@@ -1,31 +1,35 @@
 import { fireEvent } from "@testing-library/react";
+import { UserEvent } from "@testing-library/user-event";
 
 export class TextInputPageObject {
-  constructor(private element: HTMLInputElement) {}
+  constructor(
+    private element: HTMLInputElement,
+    private userState: UserEvent
+  ) {}
 
   get value() {
     return this.element.value;
   }
 
-  set value(newValue: string) {
-    fireEvent.change(this.element, {
-      target: { value: newValue }
-    });
+  async setValue(value: string) {
+    await this.userState.clear(this.element);
+    if (value !== "") {
+      await this.userState.type(this.element, value);
+    }
   }
 
-  pressEnter() {
-    fireEvent.keyDown(this.element, {
-      key: "Enter"
-    });
+  async pressEnter() {
+    await this.userState.type(this.element, "{Enter}");
   }
 
   /** This function does not replicate Backspace behaviour correctly
    * if the cursor is not at the end of the input.
    */
-  pressBackspace() {
-    fireEvent.keyDown(this.element, {
-      key: "Backspace"
-    });
-    this.value = this.value.slice(0, this.value.length - 1);
+  async pressBackspace() {
+    await this.userState.type(this.element, "{Backspace}");
+  }
+
+  async focus() {
+    await this.userState.click(this.element);
   }
 }
