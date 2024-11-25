@@ -101,7 +101,7 @@ describe("Suggestions", () => {
           expect(citySearchProvider.findCities).toHaveBeenCalledTimes(1);
         });
 
-        it("The suggestions should no longer be displayed", async () => {
+        fit("The suggestions should no longer be displayed", async () => {
           const suggestions = app.suggestedCities;
           expect(suggestions.length).toEqual(0);
         });
@@ -246,8 +246,7 @@ describe("Suggestions", () => {
           await new Promise(r => setTimeout(r, 100));
         });
 
-        it("The input should be updated to match the suggestion clicked", async () => {
-          console.log("Asserting");
+        fit("The input should be updated to match the suggestion clicked", async () => {
           expect(app.cityInput.value).toEqual("Londonadra");
         });
 

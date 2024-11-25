@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition, useRef } from "react";
 import { John } from "./components/John";
 import {
   CityNotFoundError,
@@ -29,6 +29,8 @@ export function App(props: AppProps) {
   const [cityInputText, setCityInputText] = useState("");
   // in css, make sure to hide all data when search is empty
 
+  const cityInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (cityInputText.trim().length >= 3) {
@@ -42,9 +44,16 @@ export function App(props: AppProps) {
     return () => clearTimeout(delayDebounceFn);
   }, [cityInputText]);
 
-  async function handleSuggestionClick(suggestion: CitySearchResult) {
-    console.log("Suggestion is clicked");
+  // The easiest way to fix the issue whilst remaining compatible with this React trash is to use onMouseDown on the suggestions
+  // The correct way to fix the issue would be to have a focusin handler on the document, but that doesn't work with the test library rubbish
+  // There are alternatives that involve using a flag to ignore the blur event, but frankly speaking they are messy and have their own downsides
+  function onFocusChange(e: React.FocusEvent) {
+    console.log("Running App.onFocusChange")
+    console.log(e.target === cityInputRef.current)
+    setShowSuggestions(e.target === cityInputRef.current);
+  }
 
+  async function handleSuggestionClick(suggestion: CitySearchResult) {
     setCityInputText(suggestion.city);
 
     try {
@@ -79,20 +88,14 @@ export function App(props: AppProps) {
     }
   }
   return (
-    <section>
+    <section onFocusCapture={e => onFocusChange(e)}>
       <div className="search-container">
         <div className="search-area">
           <input
             type="text"
             value={cityInputText}
             onChange={e => setCityInputText(e.target.value)}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => {
-              setTimeout(() => {
-                console.log("Hiding suggestions");
-                setShowSuggestions(false);
-              }, 1000);
-            }}
+            ref={cityInputRef}
             placeholder="Enter city name"
             data-testid={AppTestIds.cityInput}
           />
@@ -118,7 +121,7 @@ export function App(props: AppProps) {
               suggestions.map((suggestion, index) => (
                 <li
                   key={index}
-                  onClick={() => handleSuggestionClick(suggestion)}
+                  onMouseDown={() => handleSuggestionClick(suggestion)}
                   data-testid={AppTestIds.suggestedCity}
                 >{`${suggestion.city}, ${suggestion.countryCode}`}</li>
               ))}

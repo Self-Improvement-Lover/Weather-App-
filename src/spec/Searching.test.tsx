@@ -1,34 +1,25 @@
-import { render } from "@testing-library/react";
-import { App } from "../App";
 import {
   CityNotFoundError,
   DayForecast,
   WeatherDataProvider
 } from "../providers/weather-data-provider";
 import { CitySearchProvider } from "../providers/city-search-provider";
-import { StubWeatherDataProvider } from "./stubs/stub-weather-data-provider";
-import { StubCitySearchProvider } from "./stubs/stub-city-search-provider";
 import { AppPageObject } from "./page-objects/app-page-object";
+import { TestEnvironment } from "./test-environment";
 
-describe.skip("Searching", () => {
+describe("Searching", () => {
   let weatherDataProvider: WeatherDataProvider;
   let citySearchProvider: CitySearchProvider;
   let app: AppPageObject;
 
   beforeEach(() => {
-    weatherDataProvider = new StubWeatherDataProvider();
-    citySearchProvider = new StubCitySearchProvider();
+    const environment = TestEnvironment.setup();
 
-    App.debounce = 0;
+    ({ weatherDataProvider, citySearchProvider } = environment);
 
-    const renderResult = render(
-      <App
-        weatherDataProvider={weatherDataProvider}
-        citySearchProvider={citySearchProvider}
-      />
-    );
+    environment.render();
 
-    app = new AppPageObject(renderResult.baseElement);
+    app = new AppPageObject();
   });
 
   describe("When I type in 3 letters in the search box (with uppercase)", () => {
