@@ -1,6 +1,9 @@
+import { ElementPageObject } from "./element-page-object";
 
-export class ImagePageObject {
-  constructor(private element: HTMLImageElement) { }
+export class ImagePageObject extends ElementPageObject {
+  constructor(protected element: HTMLImageElement) {
+    super(element);
+  }
 
   get src() {
     return this.element.src;

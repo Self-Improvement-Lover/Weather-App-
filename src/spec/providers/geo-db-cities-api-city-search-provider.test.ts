@@ -7,7 +7,7 @@ describe.skip("Geo DB Cities API City Search Provider", () => {
   beforeEach(async () => {
     provider = new GeoDBCitiesAPICitySearchProvider();
     // Added due to rate limit per second on this API
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise(r => setTimeout(r, 1500));
   });
 
   it("Should return suggestions when nothing is provided", async () => {
@@ -17,7 +17,7 @@ describe.skip("Geo DB Cities API City Search Provider", () => {
       { city: "Al Ain", countryCode: "AE" },
       { city: "Dubai", countryCode: "AE" },
       { city: "Sharjah", countryCode: "AE" },
-      { city: "Herat", countryCode: "AF" },
+      { city: "Herat", countryCode: "AF" }
     ]);
   });
 
@@ -27,7 +27,7 @@ describe.skip("Geo DB Cities API City Search Provider", () => {
       { city: "Londrina", countryCode: "BR" },
       { city: "Londrina", countryCode: "BR" },
       { city: "Greater London", countryCode: "GB" },
-      { city: "London", countryCode: "GB" },
+      { city: "London", countryCode: "GB" }
     ]);
   });
 

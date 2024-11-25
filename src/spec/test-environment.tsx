@@ -1,9 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "../App";
-import { GeoDBCitiesAPICitySearchProvider } from "../providers/geo-db-cities-api-city-search-provider";
-import { OpenWeatherMapWeatherDataProvider } from "../providers/open-weather-map-weather-data-provider";
-import "./index.css";
 import { StubCitySearchProvider } from "./stubs/stub-city-search-provider";
 import { StubWeatherDataProvider } from "./stubs/stub-weather-data-provider";
 
@@ -21,16 +18,36 @@ export class TestEnvironment {
     return {
       render: () => {
         ReactDOM.createRoot(root).render(
-          <React.StrictMode>
-            <App
-              citySearchProvider={citySearchProvider}
-              weatherDataProvider={weatherDataProvider}
-            />
-          </React.StrictMode>
+          <App
+            citySearchProvider={citySearchProvider}
+            weatherDataProvider={weatherDataProvider}
+          />
         );
       },
       citySearchProvider,
       weatherDataProvider
     };
+  }
+
+  static async delay() {
+    await new Promise<void>(resolve => {
+      let timeout: any;
+      const observer = new MutationObserver(() => {
+        clearTimeout(timeout);
+        startTimeout();
+      });
+      function startTimeout() {
+        timeout = setTimeout(() => {
+          resolve();
+          observer.disconnect();
+        }, 25);
+      }
+      observer.observe(document.body, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      });
+      startTimeout();
+    });
   }
 }

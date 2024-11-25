@@ -1,44 +1,32 @@
-import { render } from "@testing-library/react";
-import { App } from "../App";
 import { WeatherDataProvider } from "../providers/weather-data-provider";
 import { CitySearchProvider } from "../providers/city-search-provider";
-import { StubWeatherDataProvider } from "./stubs/stub-weather-data-provider";
-import { StubCitySearchProvider } from "./stubs/stub-city-search-provider";
+import { TestEnvironment } from "./test-environment";
 import { AppPageObject } from "./page-objects/app-page-object";
 
 describe("Suggestions", () => {
   let weatherDataProvider: WeatherDataProvider;
   let citySearchProvider: CitySearchProvider;
-  let app: AppPageObject;
 
-  beforeEach(() => {
-    weatherDataProvider = new StubWeatherDataProvider();
-    citySearchProvider = new StubCitySearchProvider();
+  beforeEach(async () => {
+    const environment = TestEnvironment.setup();
 
-    App.debounce = 0;
+    ({ weatherDataProvider, citySearchProvider } = environment);
 
-    const renderResult = render(
-      <App
-        weatherDataProvider={weatherDataProvider}
-        citySearchProvider={citySearchProvider}
-      />
-    );
-
-    app = new AppPageObject(renderResult.baseElement);
+    environment.render();
+    await TestEnvironment.delay();
   });
 
   it("No suggestions should be shown", async () => {
-    expect(app.suggestedCities.length).toEqual(0);
+    expect(AppPageObject.suggestedCities.length).toEqual(0);
   });
 
   describe("When I focus on the search box", () => {
     beforeEach(async () => {
-      await app.cityInput.focus();
-      await new Promise(r => setTimeout(r, 0));
+      AppPageObject.cityInput.focus();
     });
 
     it("No suggestions should be shown", async () => {
-      expect(app.suggestedCities.length).toEqual(0);
+      expect(AppPageObject.suggestedCities.length).toEqual(0);
     });
 
     describe("When I enter some text into the search box for which suggestions are returned", () => {
@@ -54,18 +42,16 @@ describe("Suggestions", () => {
           }
         ]);
 
-        await app.cityInput.setValue("London");
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
+        AppPageObject.cityInput.setValue("London");
+        await TestEnvironment.delay();
       });
 
-      it("The provider should be called as expected", async () => {
+      fit("The provider should be called as expected", async () => {
         expect(citySearchProvider.findCities).toHaveBeenCalledWith("London");
       });
 
       it("The city suggestions should be displayed", async () => {
-        const suggestions = app.suggestedCities;
+        const suggestions = AppPageObject.suggestedCities;
         expect(suggestions.length).toEqual(2);
         expect(suggestions[0].text).toEqual("London, GB");
         expect(suggestions[1].text).toEqual("Londonadra, CA");
@@ -73,10 +59,7 @@ describe("Suggestions", () => {
 
       describe("When I clear the search box", () => {
         beforeEach(async () => {
-          await app.cityInput.setValue("");
-
-          await new Promise(r => setTimeout(r));
-          await new Promise(r => setTimeout(r));
+          AppPageObject.cityInput.setValue("");
         });
 
         it("The provider should not be called again", async () => {
@@ -84,34 +67,28 @@ describe("Suggestions", () => {
         });
 
         it("The suggestions should no longer be displayed", async () => {
-          const suggestions = app.suggestedCities;
+          const suggestions = AppPageObject.suggestedCities;
           expect(suggestions.length).toEqual(0);
         });
       });
 
       describe("When I am no longer focused on the search box", () => {
         beforeEach(async () => {
-          await app.focus();
-
-          await new Promise(r => setTimeout(r));
-          await new Promise(r => setTimeout(r));
+          AppPageObject.focus();
         });
 
         it("The provider should not be called again", async () => {
           expect(citySearchProvider.findCities).toHaveBeenCalledTimes(1);
         });
 
-        fit("The suggestions should no longer be displayed", async () => {
-          const suggestions = app.suggestedCities;
+        it("The suggestions should no longer be displayed", async () => {
+          const suggestions = AppPageObject.suggestedCities;
           expect(suggestions.length).toEqual(0);
         });
 
         describe("When I refocus on the search box", () => {
           beforeEach(async () => {
-            await app.cityInput.focus();
-
-            await new Promise(r => setTimeout(r));
-            await new Promise(r => setTimeout(r));
+            AppPageObject.cityInput.focus();
           });
 
           it("The provider should not be called again", async () => {
@@ -119,7 +96,7 @@ describe("Suggestions", () => {
           });
 
           it("The suggestions should be displayed again", async () => {
-            const suggestions = app.suggestedCities;
+            const suggestions = AppPageObject.suggestedCities;
             expect(suggestions.length).toEqual(2);
             expect(suggestions[0].text).toEqual("London, GB");
             expect(suggestions[1].text).toEqual("Londonadra, CA");
@@ -140,10 +117,7 @@ describe("Suggestions", () => {
             }
           ]);
 
-          await app.cityInput.setValue("New");
-
-          await new Promise(r => setTimeout(r));
-          await new Promise(r => setTimeout(r));
+          AppPageObject.cityInput.setValue("New");
         });
 
         it("The provider should be called again, this time with the new value", async () => {
@@ -152,7 +126,7 @@ describe("Suggestions", () => {
         });
 
         it("The city suggestions should be displayed", async () => {
-          const suggestions = app.suggestedCities;
+          const suggestions = AppPageObject.suggestedCities;
           expect(suggestions.length).toEqual(2);
           expect(suggestions[0].text).toEqual("New York, US");
           expect(suggestions[1].text).toEqual("New Fish, CA");
@@ -163,10 +137,7 @@ describe("Suggestions", () => {
         beforeEach(async () => {
           jest.spyOn(citySearchProvider, "findCities").mockResolvedValue([]);
 
-          await app.cityInput.setValue("Blahblah");
-
-          await new Promise(r => setTimeout(r));
-          await new Promise(r => setTimeout(r));
+          AppPageObject.cityInput.setValue("Blahblah");
         });
 
         it("The provider should be called as expected", async () => {
@@ -177,7 +148,7 @@ describe("Suggestions", () => {
         });
 
         it("The city suggestions should not be displayed", async () => {
-          const suggestions = app.suggestedCities;
+          const suggestions = AppPageObject.suggestedCities;
           expect(suggestions.length).toEqual(0);
         });
       });
@@ -187,14 +158,11 @@ describe("Suggestions", () => {
           jest
             .spyOn(weatherDataProvider, "getWeatherData")
             .mockResolvedValue([]);
-          await app.suggestedCities[0].click();
-
-          await new Promise(r => setTimeout(r));
-          await new Promise(r => setTimeout(r));
+          AppPageObject.suggestedCities[0].click();
         });
 
         it("The input should not be updated", async () => {
-          expect(app.cityInput.value).toEqual("London");
+          expect(AppPageObject.cityInput.value).toEqual("London");
         });
 
         it("The suggestion provider should not be called again", async () => {
@@ -209,16 +177,13 @@ describe("Suggestions", () => {
         });
 
         it("The suggestions should no longer be displayed", async () => {
-          const suggestions = app.suggestedCities;
+          const suggestions = AppPageObject.suggestedCities;
           expect(suggestions.length).toEqual(0);
         });
 
         describe("When I refocus on the search box", () => {
           beforeEach(async () => {
-            await app.cityInput.focus();
-
-            await new Promise(r => setTimeout(r));
-            await new Promise(r => setTimeout(r));
+            AppPageObject.cityInput.focus();
           });
 
           it("The provider should not be called again", async () => {
@@ -226,7 +191,7 @@ describe("Suggestions", () => {
           });
 
           it("The suggestions should be displayed again", async () => {
-            const suggestions = app.suggestedCities;
+            const suggestions = AppPageObject.suggestedCities;
             expect(suggestions.length).toEqual(2);
             expect(suggestions[0].text).toEqual("London, GB");
             expect(suggestions[1].text).toEqual("Londonadra, CA");
@@ -240,14 +205,14 @@ describe("Suggestions", () => {
             .spyOn(weatherDataProvider, "getWeatherData")
             .mockResolvedValue([]);
           console.log("Clicking");
-          await app.suggestedCities[1].click();
+          AppPageObject.suggestedCities[1].click();
 
-          await new Promise(r => setTimeout(r));
           await new Promise(r => setTimeout(r, 100));
         });
 
-        fit("The input should be updated to match the suggestion clicked", async () => {
-          expect(app.cityInput.value).toEqual("Londonadra");
+        it("The input should be updated to match the suggestion clicked", async () => {
+          console.log("Asserting");
+          expect(AppPageObject.cityInput.value).toEqual("Londonadra");
         });
 
         it("The suggestion provider should not be called again", async () => {
@@ -262,7 +227,7 @@ describe("Suggestions", () => {
         });
 
         it("The suggestions should no longer be displayed", async () => {
-          const suggestions = app.suggestedCities;
+          const suggestions = AppPageObject.suggestedCities;
           expect(suggestions.length).toEqual(0);
         });
 
@@ -284,9 +249,7 @@ describe("Suggestions", () => {
                 ];
               });
 
-            await app.cityInput.focus();
-
-            await new Promise(r => setTimeout(r));
+            AppPageObject.cityInput.focus();
           });
 
           it("The suggestion provider should be called again", async () => {
@@ -297,13 +260,13 @@ describe("Suggestions", () => {
           });
 
           it("The suggestions should not be displayed immediately", async () => {
-            const suggestions = app.suggestedCities;
+            const suggestions = AppPageObject.suggestedCities;
             expect(suggestions.length).toEqual(0);
           });
 
           it("The suggestions should eventually be displayed with the new suggestions", async () => {
             await new Promise(r => setTimeout(r, 15));
-            const suggestions = app.suggestedCities;
+            const suggestions = AppPageObject.suggestedCities;
             expect(suggestions.length).toEqual(2);
             expect(suggestions[0].text).toEqual("Londonadra, CA");
             expect(suggestions[1].text).toEqual("Londonalia, IT");
@@ -316,10 +279,7 @@ describe("Suggestions", () => {
       beforeEach(async () => {
         jest.spyOn(citySearchProvider, "findCities").mockResolvedValue([]);
 
-        await app.cityInput.setValue("something not found");
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
+        AppPageObject.cityInput.setValue("something not found");
       });
 
       it("The provider should be called as expected", async () => {
@@ -329,7 +289,7 @@ describe("Suggestions", () => {
       });
 
       it("The city suggestions should not be displayed", async () => {
-        const suggestions = app.suggestedCities;
+        const suggestions = AppPageObject.suggestedCities;
         expect(suggestions.length).toEqual(0);
       });
     });
@@ -338,10 +298,7 @@ describe("Suggestions", () => {
       beforeEach(async () => {
         jest.spyOn(citySearchProvider, "findCities").mockResolvedValue([]);
 
-        await app.cityInput.setValue("so");
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
+        AppPageObject.cityInput.setValue("so");
       });
 
       it("The provider should not be called", async () => {

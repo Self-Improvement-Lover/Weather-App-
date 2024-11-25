@@ -10,16 +10,14 @@ import { TestEnvironment } from "./test-environment";
 describe("Searching", () => {
   let weatherDataProvider: WeatherDataProvider;
   let citySearchProvider: CitySearchProvider;
-  let app: AppPageObject;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const environment = TestEnvironment.setup();
 
     ({ weatherDataProvider, citySearchProvider } = environment);
 
     environment.render();
-
-    app = new AppPageObject();
+    await TestEnvironment.delay();
   });
 
   describe("When I type in 3 letters in the search box (with uppercase)", () => {
@@ -35,10 +33,7 @@ describe("Searching", () => {
         }
       ]);
 
-      // app.cityInput.value = "Lon";
-
-      await new Promise(r => setTimeout(r));
-      await new Promise(r => setTimeout(r));
+      // AppPageObject.cityInput.value = "Lon";
     });
 
     test("The suggestions provider should be called as expected to find matching cities", async () => {
@@ -46,7 +41,7 @@ describe("Searching", () => {
     });
 
     test("I should see the city suggestions displayed", async () => {
-      const suggestions = app.suggestedCities;
+      const suggestions = AppPageObject.suggestedCities;
       expect(suggestions.length).toEqual(2);
       expect(suggestions[0].text).toEqual("London, GB");
       expect(suggestions[1].text).toEqual("Londonadra, CA");
@@ -56,10 +51,7 @@ describe("Searching", () => {
       beforeEach(async () => {
         jest.resetAllMocks();
 
-        // app.cityInput.value = "";
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
+        // AppPageObject.cityInput.value = "";
       });
 
       test("The provider should not be called again", async () => {
@@ -67,7 +59,7 @@ describe("Searching", () => {
       });
 
       test("I should not see any city suggestions displayed", async () => {
-        expect(app.suggestedCities.length).toEqual(0);
+        expect(AppPageObject.suggestedCities.length).toEqual(0);
       });
     });
 
@@ -117,20 +109,17 @@ describe("Searching", () => {
           .spyOn(weatherDataProvider, "getWeatherData")
           .mockResolvedValue(stubForecastData);
 
-        const suggestions = app.suggestedCities;
+        const suggestions = AppPageObject.suggestedCities;
 
         suggestions[0].click();
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
       });
 
       test("The selected city should be displayed in the search box", async () => {
-        expect(app.cityInput.value).toEqual("London");
+        expect(AppPageObject.cityInput.value).toEqual("London");
       });
 
       test("The suggestions should no longer show", async () => {
-        expect(app.suggestedCities.length).toEqual(0);
+        expect(AppPageObject.suggestedCities.length).toEqual(0);
       });
 
       test("The weather data for that city should be requested as expected", async () => {
@@ -146,7 +135,7 @@ describe("Searching", () => {
       test("Todays weather data for that city should be displayed", async () => {
         const [todaysData] = stubForecastData;
 
-        const today = app.todaysWeather;
+        const today = AppPageObject.todaysWeather;
         expect(today.date.text).toEqual(todaysData.date);
         expect(today.icon.src).toEqual(todaysData.icon);
         expect(today.icon.alt).toEqual(todaysData.description);
@@ -160,7 +149,7 @@ describe("Searching", () => {
       });
 
       test("The following days' weather data for that city should be displayed", async () => {
-        const followingDays = app.followingDaysWeather;
+        const followingDays = AppPageObject.followingDaysWeather;
 
         expect(followingDays.length).toEqual(stubForecastData.length - 1);
 
@@ -192,10 +181,7 @@ describe("Searching", () => {
         }
       ]);
 
-      // app.cityInput.value = "lon";
-
-      await new Promise(r => setTimeout(r));
-      await new Promise(r => setTimeout(r));
+      // AppPageObject.cityInput.value = "lon";
     });
 
     test("The provider should be called as expected", async () => {
@@ -204,7 +190,7 @@ describe("Searching", () => {
     });
 
     test("I should see the city suggestions displayed", async () => {
-      expect(app.suggestedCities.length).toEqual(1);
+      expect(AppPageObject.suggestedCities.length).toEqual(1);
     });
   });
 
@@ -217,10 +203,7 @@ describe("Searching", () => {
         }
       ]);
 
-      // app.cityInput.value = "Lo";
-
-      await new Promise(r => setTimeout(r));
-      await new Promise(r => setTimeout(r));
+      // AppPageObject.cityInput.value = "Lo";
     });
 
     test("The suggestions provider should not be called", async () => {
@@ -228,7 +211,7 @@ describe("Searching", () => {
     });
 
     test("I should not see any city suggestions displayed", async () => {
-      expect(app.suggestedCities.length).toEqual(0);
+      expect(AppPageObject.suggestedCities.length).toEqual(0);
     });
   });
 
@@ -236,10 +219,7 @@ describe("Searching", () => {
     beforeEach(async () => {
       jest.spyOn(citySearchProvider, "findCities").mockResolvedValue([]);
 
-      // app.cityInput.value = "New City";
-
-      await new Promise(r => setTimeout(r));
-      await new Promise(r => setTimeout(r));
+      // AppPageObject.cityInput.value = "New City";
     });
 
     test("The provider should be called as expected", async () => {
@@ -248,7 +228,7 @@ describe("Searching", () => {
     });
 
     test("I should not see any suggestions", async () => {
-      expect(app.suggestedCities.length).toEqual(0);
+      expect(AppPageObject.suggestedCities.length).toEqual(0);
     });
 
     describe("When I click search anyway and weather data for the city exists", () => {
@@ -297,14 +277,11 @@ describe("Searching", () => {
           .spyOn(weatherDataProvider, "getWeatherData")
           .mockResolvedValue(stubForecastData);
 
-        app.search.click();
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
+        AppPageObject.search.click();
       });
 
       test("The city should remain in the search box", async () => {
-        expect(app.cityInput.value).toEqual("New City");
+        expect(AppPageObject.cityInput.value).toEqual("New City");
       });
 
       test("The weather data for that city should be requested as expected", async () => {
@@ -317,7 +294,7 @@ describe("Searching", () => {
       test("Todays weather data for that city should be displayed", async () => {
         const [todaysData] = stubForecastData;
 
-        const today = app.todaysWeather;
+        const today = AppPageObject.todaysWeather;
         expect(today.date.text).toEqual(todaysData.date);
         expect(today.icon.src).toEqual(todaysData.icon);
         expect(today.icon.alt).toEqual(todaysData.description);
@@ -331,7 +308,7 @@ describe("Searching", () => {
       });
 
       test("The following days' weather data for that city should be displayed", async () => {
-        const followingDays = app.followingDaysWeather;
+        const followingDays = AppPageObject.followingDaysWeather;
 
         expect(followingDays.length).toEqual(stubForecastData.length - 1);
 
@@ -354,8 +331,7 @@ describe("Searching", () => {
 
       describe("When I click search again", () => {
         beforeEach(async () => {
-          app.search.click();
-          await new Promise(r => setTimeout(r));
+          AppPageObject.search.click();
         });
 
         test.skip("The weather data should not be retreived again", async () => {
@@ -410,14 +386,11 @@ describe("Searching", () => {
           .spyOn(weatherDataProvider, "getWeatherData")
           .mockResolvedValue(stubForecastData);
 
-        app.cityInput.pressEnter();
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
+        AppPageObject.cityInput.pressEnter();
       });
 
       test("The city should remain in the search box", async () => {
-        expect(app.cityInput.value).toEqual("New City");
+        expect(AppPageObject.cityInput.value).toEqual("New City");
       });
 
       test("The weather data for that city should be requested as expected", async () => {
@@ -429,7 +402,7 @@ describe("Searching", () => {
       test("Todays weather data for that city should be displayed", async () => {
         const [todaysData] = stubForecastData;
 
-        const today = app.todaysWeather;
+        const today = AppPageObject.todaysWeather;
         expect(today.date.text).toEqual(todaysData.date);
         expect(today.icon.src).toEqual(todaysData.icon);
         expect(today.icon.alt).toEqual(todaysData.description);
@@ -443,7 +416,7 @@ describe("Searching", () => {
       });
 
       test("The following days' weather data for that city should be displayed", async () => {
-        const followingDays = app.followingDaysWeather;
+        const followingDays = AppPageObject.followingDaysWeather;
 
         expect(followingDays.length).toEqual(stubForecastData.length - 1);
 
@@ -466,8 +439,7 @@ describe("Searching", () => {
 
       describe("When I press Enter again", () => {
         beforeEach(async () => {
-          app.cityInput.pressEnter();
-          await new Promise(r => setTimeout(r));
+          AppPageObject.cityInput.pressEnter();
         });
 
         test.skip("The weather data should not be retreived again", async () => {
@@ -482,10 +454,7 @@ describe("Searching", () => {
           .spyOn(weatherDataProvider, "getWeatherData")
           .mockRejectedValue(new CityNotFoundError());
 
-        app.search.click();
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
+        AppPageObject.search.click();
       });
 
       test("The weather data for that city should be requested as expected", async () => {
@@ -496,21 +465,20 @@ describe("Searching", () => {
       });
 
       test("The city should remain in the search box", async () => {
-        expect(app.cityInput.value).toEqual("New City");
+        expect(AppPageObject.cityInput.value).toEqual("New City");
       });
 
       test("No weather data for that city should not be displayed and an error message should appear", async () => {
-        expect(app.todaysWeather.isDisplayed).toEqual(false);
-        expect(app.error.isDisplayed).toEqual(true);
-        expect(app.error.text).toEqual(
+        expect(AppPageObject.todaysWeather.isDisplayed).toEqual(false);
+        expect(AppPageObject.error.isDisplayed).toEqual(true);
+        expect(AppPageObject.error.text).toEqual(
           "The city was not found. Please check spelling and try again."
         );
       });
 
       describe("When I click search again", () => {
         beforeEach(async () => {
-          app.search.click();
-          await new Promise(r => setTimeout(r));
+          AppPageObject.search.click();
         });
 
         test.skip("The weather data should not be retreived again", async () => {
@@ -525,10 +493,7 @@ describe("Searching", () => {
           .spyOn(weatherDataProvider, "getWeatherData")
           .mockRejectedValue(new CityNotFoundError());
 
-        app.cityInput.pressEnter();
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
+        AppPageObject.cityInput.pressEnter();
       });
 
       test("The weather data for that city should be requested as expected", async () => {
@@ -539,21 +504,20 @@ describe("Searching", () => {
       });
 
       test("The city should remain in the search box", async () => {
-        expect(app.cityInput.value).toEqual("New City");
+        expect(AppPageObject.cityInput.value).toEqual("New City");
       });
 
       test("No weather data for that city should not be displayed and an error message should appear", async () => {
-        expect(app.todaysWeather.isDisplayed).toEqual(false);
-        expect(app.error.isDisplayed).toEqual(true);
-        expect(app.error.text).toEqual(
+        expect(AppPageObject.todaysWeather.isDisplayed).toEqual(false);
+        expect(AppPageObject.error.isDisplayed).toEqual(true);
+        expect(AppPageObject.error.text).toEqual(
           "The city was not found. Please check spelling and try again."
         );
       });
 
       describe("When I press Enter again", () => {
         beforeEach(async () => {
-          app.cityInput.pressEnter();
-          await new Promise(r => setTimeout(r));
+          AppPageObject.cityInput.pressEnter();
         });
 
         test.skip("The weather data should not be retreived again", async () => {
@@ -577,14 +541,11 @@ describe("Searching", () => {
           }
         ]);
 
-        // app.cityInput.value = "Lon";
-
-        await new Promise(r => setTimeout(r));
-        await new Promise(r => setTimeout(r));
+        // AppPageObject.cityInput.value = "Lon";
       });
 
       test("I should see the city suggestions displayed", async () => {
-        const suggestions = app.suggestedCities;
+        const suggestions = AppPageObject.suggestedCities;
         expect(suggestions.length).toEqual(2);
         expect(suggestions[0].text).toEqual("London, GB");
         expect(suggestions[1].text).toEqual("Londonadra, CA");
@@ -592,23 +553,21 @@ describe("Searching", () => {
 
       describe("When I press the Enter button", () => {
         beforeEach(async () => {
-          app.cityInput.pressEnter();
-          await new Promise(r => setTimeout(r));
+          AppPageObject.cityInput.pressEnter();
         });
 
         test("The suggestions should no longer be displayed", async () => {
-          const suggestions = app.suggestedCities;
+          const suggestions = AppPageObject.suggestedCities;
           expect(suggestions.length).toEqual(0);
         });
 
         describe("When I press the Backspace button", () => {
           beforeEach(async () => {
-            app.cityInput.pressBackspace();
-            await new Promise(r => setTimeout(r));
+            AppPageObject.cityInput.pressBackspace();
           });
 
           test("The text in the input should be as expected", async () => {
-            expect(app.cityInput.value).toEqual("Lo");
+            expect(AppPageObject.cityInput.value).toEqual("Lo");
           });
 
           test.skip("The suggestions provider should be called again, this time with the new value", async () => {
@@ -616,7 +575,7 @@ describe("Searching", () => {
           });
 
           test.skip("The suggestions should be displayed again", async () => {
-            const suggestions = app.suggestedCities;
+            const suggestions = AppPageObject.suggestedCities;
             expect(suggestions.length).toEqual(2);
           });
         });

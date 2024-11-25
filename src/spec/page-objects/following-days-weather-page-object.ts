@@ -1,16 +1,14 @@
-import { queryByTestId } from "@testing-library/react";
 import { FollowingDayDataTestIds } from "../../components/FollowingDayData";
 import { ElementPageObject } from "./element-page-object";
 import { ImagePageObject } from "./image-page-object";
-import { UserEvent } from "@testing-library/user-event";
+import { queryByTestId } from "./query-by-test-id";
 
 export class FollowingDaysWeatherPageObject {
-  constructor(private element: HTMLElement, private userState: UserEvent) {}
+  constructor(private element: HTMLElement) {}
 
   get date() {
     return new ElementPageObject(
-      queryByTestId(this.element, FollowingDayDataTestIds.date) as HTMLElement,
-      this.userState
+      queryByTestId(this.element, FollowingDayDataTestIds.date) as HTMLElement
     );
   }
 
@@ -25,8 +23,7 @@ export class FollowingDaysWeatherPageObject {
 
   get temperature() {
     return new ElementPageObject(
-      queryByTestId(this.element, FollowingDayDataTestIds.temp) as HTMLElement,
-      this.userState
+      queryByTestId(this.element, FollowingDayDataTestIds.temp) as HTMLElement
     );
   }
 
@@ -35,8 +32,7 @@ export class FollowingDaysWeatherPageObject {
       queryByTestId(
         this.element,
         FollowingDayDataTestIds.maxTemp
-      ) as HTMLElement,
-      this.userState
+      ) as HTMLElement
     );
   }
 
@@ -45,8 +41,7 @@ export class FollowingDaysWeatherPageObject {
       queryByTestId(
         this.element,
         FollowingDayDataTestIds.minTemp
-      ) as HTMLElement,
-      this.userState
+      ) as HTMLElement
     );
   }
 
@@ -55,8 +50,7 @@ export class FollowingDaysWeatherPageObject {
       queryByTestId(
         this.element,
         FollowingDayDataTestIds.feelsLike
-      ) as HTMLElement,
-      this.userState
+      ) as HTMLElement
     );
   }
 
@@ -65,8 +59,7 @@ export class FollowingDaysWeatherPageObject {
       queryByTestId(
         this.element,
         FollowingDayDataTestIds.pressure
-      ) as HTMLElement,
-      this.userState
+      ) as HTMLElement
     );
   }
 
@@ -75,8 +68,7 @@ export class FollowingDaysWeatherPageObject {
       queryByTestId(
         this.element,
         FollowingDayDataTestIds.humidity
-      ) as HTMLElement,
-      this.userState
+      ) as HTMLElement
     );
   }
 
@@ -85,8 +77,7 @@ export class FollowingDaysWeatherPageObject {
       queryByTestId(
         this.element,
         FollowingDayDataTestIds.windSpeed
-      ) as HTMLElement,
-      this.userState
+      ) as HTMLElement
     );
   }
 }

@@ -48,8 +48,8 @@ export function App(props: AppProps) {
   // The correct way to fix the issue would be to have a focusin handler on the document, but that doesn't work with the test library rubbish
   // There are alternatives that involve using a flag to ignore the blur event, but frankly speaking they are messy and have their own downsides
   function onFocusChange(e: React.FocusEvent) {
-    console.log("Running App.onFocusChange")
-    console.log(e.target === cityInputRef.current)
+    console.log("Running App.onFocusChange");
+    console.log(e.target === cityInputRef.current);
     setShowSuggestions(e.target === cityInputRef.current);
   }
 
@@ -88,13 +88,18 @@ export function App(props: AppProps) {
     }
   }
   return (
-    <section onFocusCapture={e => onFocusChange(e)}>
+    <section
+      data-testid={AppTestIds.container}
+      onFocusCapture={e => onFocusChange(e)}
+    >
       <div className="search-container">
         <div className="search-area">
           <input
             type="text"
             value={cityInputText}
-            onChange={e => setCityInputText(e.target.value)}
+            onChange={e => {
+              return setCityInputText(e.target.value);
+            }}
             ref={cityInputRef}
             placeholder="Enter city name"
             data-testid={AppTestIds.cityInput}
@@ -142,6 +147,7 @@ export function App(props: AppProps) {
 App.debounce = 600;
 
 export const AppTestIds = {
+  container: "app-test-id",
   cityInput: "app-test-id-city-input",
   searchButton: "app-test-id-search-button",
   suggestedCity: "app-test-id-suggested-city",
